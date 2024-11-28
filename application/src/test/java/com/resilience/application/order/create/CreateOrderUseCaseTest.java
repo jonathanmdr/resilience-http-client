@@ -6,7 +6,6 @@ import com.resilience.domain.order.Order;
 import com.resilience.domain.order.OrderGateway;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
-import com.resilience.domain.validation.handler.NotificationHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -32,7 +31,7 @@ class CreateOrderUseCaseTest extends MockSupportTest {
     private OrderGateway orderGateway;
 
     @InjectMocks
-    private DefaultCreateOrderUseCase createOrderUseCase;
+    private DefaultCreateOrderUseCase subject;
 
     @Override
     protected List<Object> mocks() {
@@ -48,7 +47,7 @@ class CreateOrderUseCaseTest extends MockSupportTest {
 
         when(this.orderGateway.create(any(Order.class))).thenReturn(order);
 
-        final Result<CreateOrderOutput, ValidationHandler> result = this.createOrderUseCase.execute(createOrderInput);
+        final Result<CreateOrderOutput, ValidationHandler> result = this.subject.execute(createOrderInput);
 
         assertSoftly(softly -> {
             softly.assertThat(result).isNotNull();
@@ -74,11 +73,9 @@ class CreateOrderUseCaseTest extends MockSupportTest {
     void shouldBeReturnErrorWhenCustomerIdIsInvalid(final String customerId) {
         final var amount = BigDecimal.TEN;
         final var createOrderInput = CreateOrderInput.with(customerId, amount);
-        final var validationHandler = NotificationHandler.create();
         final var error = new Error("Customer id must not be null or blank");
-        validationHandler.append(error);
 
-        final Result<CreateOrderOutput, ValidationHandler> createOrderResult = this.createOrderUseCase.execute(createOrderInput);
+        final Result<CreateOrderOutput, ValidationHandler> createOrderResult = this.subject.execute(createOrderInput);
 
         assertSoftly(softly -> {
             softly.assertThat(createOrderResult).isNotNull();
@@ -108,11 +105,9 @@ class CreateOrderUseCaseTest extends MockSupportTest {
     void shouldBeReturnErrorWhenAmountIsInvalid(final BigDecimal amount) {
         final var customerId = UUID.randomUUID().toString();
         final var createOrderInput = CreateOrderInput.with(customerId, amount);
-        final var validationHandler = NotificationHandler.create();
         final var error = new Error("Amount must be greater than zero");
-        validationHandler.append(error);
 
-        final Result<CreateOrderOutput, ValidationHandler> createOrderResult = this.createOrderUseCase.execute(createOrderInput);
+        final Result<CreateOrderOutput, ValidationHandler> createOrderResult = this.subject.execute(createOrderInput);
 
         assertSoftly(softly -> {
             softly.assertThat(createOrderResult).isNotNull();
