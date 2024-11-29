@@ -24,6 +24,7 @@ class OrderTest {
             softly.assertThat(order.customerId()).isEqualTo("1234");
             softly.assertThat(order.amount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(order.status()).isEqualTo(OrderStatus.CREATED);
+            softly.assertThat(order.events()).isEmpty();
         });
     }
 
@@ -35,6 +36,7 @@ class OrderTest {
             softly.assertThat(order.customerId()).isEqualTo("1234");
             softly.assertThat(order.amount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(order.status()).isEqualTo(OrderStatus.CONFIRMED);
+            softly.assertThat(order.events()).isEmpty();
         });
     }
 
@@ -46,6 +48,7 @@ class OrderTest {
             softly.assertThat(order.customerId()).isEqualTo("1234");
             softly.assertThat(order.amount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(order.status()).isEqualTo(OrderStatus.REJECTED);
+            softly.assertThat(order.events()).isEmpty();
         });
     }
 
@@ -57,6 +60,7 @@ class OrderTest {
         assertSoftly(softly -> {
             softly.assertThat(validationHandler.hasErrors()).isTrue();
             softly.assertThat(validationHandler.errors()).isEqualTo(List.of(error));
+            softly.assertThat(order.events()).isEmpty();
         });
     }
 

@@ -1,5 +1,7 @@
 package com.resilience.domain.authorization;
 
+import com.resilience.domain.StubDomainEventPublisher;
+import com.resilience.domain.events.DomainEvent;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.domain.validation.handler.NotificationHandler;
@@ -7,12 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class AuthorizationTest {
 
@@ -25,6 +33,7 @@ class AuthorizationTest {
             softly.assertThat(authorization.customerId()).isEqualTo("4321");
             softly.assertThat(authorization.orderAmount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(authorization.status()).isEqualTo(AuthorizationStatus.PENDING);
+            softly.assertThat(authorization.events()).isEmpty();
         });
     }
 
@@ -37,6 +46,17 @@ class AuthorizationTest {
             softly.assertThat(authorization.customerId()).isEqualTo("4321");
             softly.assertThat(authorization.orderAmount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(authorization.status()).isEqualTo(AuthorizationStatus.APPROVED);
+            softly.assertThat(authorization.events())
+                .hasSize(1)
+                .satisfies(events -> {
+                    final var event = (AuthorizationProcessedEvent) events.getFirst();
+                    softly.assertThat(event.authorizationId())
+                        .isNotNull()
+                        .isEqualTo(authorization.id().value());
+                    softly.assertThat(event.orderId()).isEqualTo(authorization.orderId());
+                    softly.assertThat(event.orderAmount()).isEqualTo(authorization.orderAmount());
+                    softly.assertThat(event.status()).isEqualTo(AuthorizationStatus.APPROVED);
+                });
         });
     }
 
@@ -49,7 +69,59 @@ class AuthorizationTest {
             softly.assertThat(authorization.customerId()).isEqualTo("4321");
             softly.assertThat(authorization.orderAmount()).isEqualTo(BigDecimal.TEN);
             softly.assertThat(authorization.status()).isEqualTo(AuthorizationStatus.REFUSED);
+            softly.assertThat(authorization.events())
+                .hasSize(1)
+                .satisfies(events -> {
+                    final var event = (AuthorizationProcessedEvent) events.getFirst();
+                    softly.assertThat(event.authorizationId())
+                        .isNotNull()
+                        .isEqualTo(authorization.id().value());
+                    softly.assertThat(event.orderId()).isEqualTo(authorization.orderId());
+                    softly.assertThat(event.orderAmount()).isEqualTo(authorization.orderAmount());
+                    softly.assertThat(event.status()).isEqualTo(AuthorizationStatus.REFUSED);
+                });
         });
+    }
+
+    @Test
+    void shouldBeHasEmptyEventsWhenAddNullableEvent() {
+        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN);
+        authorization.addEvent(null);
+        assertThat(authorization.events()).isEmpty();
+    }
+
+    @Test
+    void shouldBePublishDomainEvents() {
+        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN);
+        final var eventOne = AuthorizationProcessedEvent.with("1234", "4321", BigDecimal.TEN, AuthorizationStatus.APPROVED, Instant.now());
+        final var eventTwo = AuthorizationProcessedEvent.with("1234", "4321", BigDecimal.TEN, AuthorizationStatus.APPROVED, Instant.now());
+        authorization.addEvent(eventOne);
+        authorization.addEvent(eventTwo);
+
+        assertThat(authorization.events()).hasSize(2);
+
+        final var publisher = spy(StubDomainEventPublisher.class);
+        authorization.dispatch(publisher);
+
+        assertThat(authorization.events()).isEmpty();
+
+        final ArgumentCaptor<DomainEvent> eventCaptor = ArgumentCaptor.forClass(DomainEvent.class);
+        verify(publisher, times(2)).publish(eventCaptor.capture());
+
+        assertThat(eventCaptor.getAllValues()).containsExactly(eventOne, eventTwo);
+    }
+
+    @Test
+    void shouldBeIgnorePublishDomainEventsWithNullableDispatcher() {
+        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN);
+        final var eventOne = AuthorizationProcessedEvent.with("1234", "4321", BigDecimal.TEN, AuthorizationStatus.APPROVED, Instant.now());
+        final var eventTwo = AuthorizationProcessedEvent.with("1234", "4321", BigDecimal.TEN, AuthorizationStatus.APPROVED, Instant.now());
+        authorization.addEvent(eventOne);
+        authorization.addEvent(eventTwo);
+
+        assertThat(authorization.events()).hasSize(2);
+        authorization.dispatch(null);
+        assertThat(authorization.events()).hasSize(2);
     }
 
     @ParameterizedTest
@@ -60,6 +132,7 @@ class AuthorizationTest {
         assertSoftly(softly -> {
             softly.assertThat(validationHandler.hasErrors()).isTrue();
             softly.assertThat(validationHandler.errors()).isEqualTo(List.of(error));
+            softly.assertThat(authorization.events()).isEmpty();
         });
     }
 

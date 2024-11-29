@@ -4,6 +4,7 @@ import com.resilience.domain.AggregateRoot;
 import com.resilience.domain.validation.ValidationHandler;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public final class Authorization extends AggregateRoot<AuthorizationId> {
 
@@ -31,11 +32,15 @@ public final class Authorization extends AggregateRoot<AuthorizationId> {
     }
 
     public Authorization approve() {
-        return new Authorization(this.id, this.orderId, this.customerId, this.orderAmount, this.authorizationStatus.approve());
+        final var authorization = new Authorization(this.id, this.orderId, this.customerId, this.orderAmount, this.authorizationStatus.approve());
+        authorization.addEvent(AuthorizationProcessedEvent.with(this.id.value(), this.orderId, this.orderAmount, authorization.status(), Instant.now()));
+        return authorization;
     }
 
     public Authorization refuse() {
-        return new Authorization(this.id, this.orderId, this.customerId, this.orderAmount, this.authorizationStatus.refuse());
+        final var authorization = new Authorization(this.id, this.orderId, this.customerId, this.orderAmount, this.authorizationStatus.refuse());
+        authorization.addEvent(AuthorizationProcessedEvent.with(this.id.value(), this.orderId, this.orderAmount, authorization.status(), Instant.now()));
+        return authorization;
     }
 
     @Override

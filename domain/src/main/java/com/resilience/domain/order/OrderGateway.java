@@ -6,5 +6,6 @@ public interface OrderGateway {
 
     Optional<Order> findById(final OrderId orderId);
     Order create(final Order order);
+    Order update(final Order order);
 
 }
