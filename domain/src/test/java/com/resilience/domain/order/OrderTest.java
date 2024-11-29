@@ -1,5 +1,6 @@
 package com.resilience.domain.order;
 
+import com.resilience.domain.authorization.AuthorizationStatus;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.domain.validation.handler.NotificationHandler;
@@ -29,8 +30,22 @@ class OrderTest {
     }
 
     @Test
+    void shouldBeDoNothingWhenAuthorizeWithPendingAuthorizationStatus() {
+        final var order = Order.create("1234", BigDecimal.TEN)
+            .authorize(AuthorizationOrderStatusTranslatorService.create(AuthorizationStatus.PENDING));
+        assertSoftly(softly -> {
+            softly.assertThat(order.id()).isNotNull();
+            softly.assertThat(order.customerId()).isEqualTo("1234");
+            softly.assertThat(order.amount()).isEqualTo(BigDecimal.TEN);
+            softly.assertThat(order.status()).isEqualTo(OrderStatus.CREATED);
+            softly.assertThat(order.events()).isEmpty();
+        });
+    }
+
+    @Test
     void shouldBeConfirmOrder() {
-        final var order = Order.create("1234", BigDecimal.TEN).confirm();
+        final var order = Order.create("1234", BigDecimal.TEN)
+            .authorize(AuthorizationOrderStatusTranslatorService.create(AuthorizationStatus.APPROVED));
         assertSoftly(softly -> {
             softly.assertThat(order.id()).isNotNull();
             softly.assertThat(order.customerId()).isEqualTo("1234");
@@ -42,7 +57,8 @@ class OrderTest {
 
     @Test
     void shouldBeRejectOrder() {
-        final var order = Order.create("1234", BigDecimal.TEN).reject();
+        final var order = Order.create("1234", BigDecimal.TEN)
+            .authorize(AuthorizationOrderStatusTranslatorService.create(AuthorizationStatus.REFUSED));
         assertSoftly(softly -> {
             softly.assertThat(order.id()).isNotNull();
             softly.assertThat(order.customerId()).isEqualTo("1234");

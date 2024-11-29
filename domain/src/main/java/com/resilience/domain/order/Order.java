@@ -22,12 +22,12 @@ public final class Order extends AggregateRoot<OrderId> {
         return new Order(OrderId.unique(), customerId, amount, OrderStatus.CREATED);
     }
 
-    public Order confirm() {
-        return new Order(this.id, this.customerId, this.amount, this.orderStatus.confirm());
-    }
-
-    public Order reject() {
-        return new Order(this.id, this.customerId, this.amount, this.orderStatus.reject());
+    public Order authorize(final AuthorizationOrderStatusTranslator authorizationOrderStatusTranslator) {
+        return switch (authorizationOrderStatusTranslator.get()) {
+            case CREATED -> this;
+            case CONFIRMED -> this.confirm();
+            case REJECTED -> this.reject();
+        };
     }
 
     @Override
@@ -45,6 +45,14 @@ public final class Order extends AggregateRoot<OrderId> {
 
     public OrderStatus status() {
         return this.orderStatus;
+    }
+
+    private Order confirm() {
+        return new Order(this.id, this.customerId, this.amount, this.orderStatus.confirm());
+    }
+
+    private Order reject() {
+        return new Order(this.id, this.customerId, this.amount, this.orderStatus.reject());
     }
 
 }
