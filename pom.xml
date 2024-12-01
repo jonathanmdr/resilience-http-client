@@ -13,6 +13,7 @@
         <module>domain</module>
         <module>application</module>
         <module>coverage</module>
+        <module>order-api</module>
     </modules>
 
     <properties>

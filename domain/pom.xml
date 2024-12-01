@@ -11,7 +11,7 @@
 
     <groupId>com.resilience.domain</groupId>
     <artifactId>domain</artifactId>
-    <version>0.0.1</version>
+    <version>${project.parent.version}</version>
 
     <properties>
         <!-- PROJECT -->

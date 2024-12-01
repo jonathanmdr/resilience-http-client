@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>coverage</artifactId>
-    <version>0.0.1</version>
+    <version>${project.parent.version}</version>
     <packaging>pom</packaging>
 
     <properties>

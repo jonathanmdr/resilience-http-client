@@ -1,0 +1,31 @@
+services:
+
+  order-api.database:
+    image: docker.io/bitnami/mysql:8.0
+    container_name: order-api.database
+    hostname: order-api.database
+    restart: "no"
+    environment:
+      MYSQL_USER: admin
+      MYSQL_DATABASE: ecommerce
+      ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/bitnami/mysql/data
+    networks:
+      - order-api-network
+    healthcheck:
+      test: [ "CMD", "/opt/bitnami/scripts/mysql/healthcheck.sh" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+networks:
+  order-api-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

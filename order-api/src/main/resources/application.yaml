@@ -1,0 +1,112 @@
+# SERVER CONFIGURATION
+server:
+    servlet:
+        context-path: /
+    port: 8080
+    shutdown: "graceful"
+    compression:
+        enabled: true
+        mime-types:
+            - text/html
+            - text/xml
+            - text/plain
+            - text/css
+            - text/javascript
+            - application/javascript
+            - application/json
+        min-response-size: 1024
+    undertow:
+        threads:
+            worker: 64
+            io: 4
+
+# ACTUATOR CONFIGURATION
+management:
+    endpoint:
+        health:
+            show-details: never
+    endpoints:
+        web:
+            base-path: /
+            exposure:
+                include: health
+
+# DATABASE CONFIGURATIONS
+database:
+    url: localhost:3306
+    schema-name: ecommerce
+    username: root
+    password: root
+
+# SPRING CONFIGURATION
+spring:
+    application:
+        name: @project.name@
+        version: @project.version@
+    main:
+        banner-mode: "off"
+    web:
+        resources:
+            add-mappings: false
+    mvc:
+        throw-exception-if-no-handler-found: true
+        favicon:
+            enabled: false
+    metrics:
+        web:
+            server:
+                auto-time-requests: true
+
+# CODECS CONFIGURATION
+    codec:
+        max-in-memory-size: 1MB
+
+# SPRING VIRTUAL THREADS FOR JAVA 21
+    threads:
+        virtual:
+            enabled: true
+
+# SPRING DATA JPA CONFIGURATION
+    datasource:
+        url: jdbc:mysql://${database.url}/${database.schema-name}?serverTimezone=UTC&characterEncoding=UTF-8&rewriteBatchedStatements=true
+        username: ${database.username}
+        password: ${database.password}
+        hikari:
+            auto-commit: false
+            connection-timeout: 10000 # milliseconds (10 seconds)
+            max-lifetime: 600000      # milliseconds (10 minutes)
+            maximum-pool-size: 20     # max connections per replica
+            minimum-idle: 10          # min connections per replica
+            idle-timeout: 300000      # milliseconds (5 minutes)
+            pool-name: ${spring.application.name}
+    jpa:
+        open-in-view: false
+        show-sql: false
+        hibernate:
+            ddl-auto: none
+        properties:
+            "[hibernate.dialect.storage_engine]": innodb
+            "[hibernate.generate_statistics]": false
+            "[hibernate.connection.provider_disables_autocommit]": true
+            "[hibernate.jdbc.batch_size]": 20
+            "[hibernate.order_inserts]": true
+            "[hibernate.order_updates]": true
+
+# OPEN API CONFIGURATION
+springdoc:
+    api-docs:
+        path: /api-docs
+        resolve-schema-properties: true
+    override-with-generic-response: false
+    paths-to-exclude: /**/api-docs,/swagger-resources/**
+    swagger-ui:
+        path: /
+
+# LOGGING CONFIGURATION
+logging:
+    level:
+        ROOT: INFO
+        com.resilience: INFO
+    appender: CONSOLE
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %X{X-Request-ID} %highlight(%-5level) %magenta([%t]) %msg%n"
