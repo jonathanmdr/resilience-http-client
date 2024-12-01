@@ -22,6 +22,10 @@ public final class Order extends AggregateRoot<OrderId> {
         return new Order(OrderId.unique(), customerId, amount, OrderStatus.CREATED);
     }
 
+    public static Order with(final OrderId id, final String customerId, final BigDecimal amount, final OrderStatus status) {
+        return new Order(id, customerId, amount, status);
+    }
+
     public Order authorize(final AuthorizationOrderStatusTranslator authorizationOrderStatusTranslator) {
         return switch (authorizationOrderStatusTranslator.get()) {
             case CREATED -> this;

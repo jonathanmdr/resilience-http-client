@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS orders(
+    id VARCHAR(36) NOT NULL,
+    customer_id VARCHAR(36) NOT NULL,
+    amount DECIMAL(16, 2) NOT NULL,
+    status VARCHAR(10) NOT NULL,
+    CONSTRAINT pk_orders PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
