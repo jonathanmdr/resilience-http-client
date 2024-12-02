@@ -18,7 +18,7 @@ import java.util.Objects;
     name = "orders",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "pk_orders_id",
+            name = "pk_orders",
             columnNames = {
                 "id"
             }
@@ -96,7 +96,7 @@ public class OrderJpaEntity {
         if (!(o instanceof final OrderJpaEntity that)) return false;
         return Objects.equals(this.id, that.id)
             && Objects.equals(this.customerId, that.customerId)
-            && Objects.equals(this.amount, that.amount)
+            && Objects.nonNull(this.amount) && this.amount.compareTo(that.amount) == 0
             && this.status == that.status;
     }
 
