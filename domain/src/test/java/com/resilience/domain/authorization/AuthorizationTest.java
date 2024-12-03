@@ -39,7 +39,8 @@ class AuthorizationTest {
 
     @Test
     void shouldBeApproveAuthorization() {
-        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN).approve();
+        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN)
+            .authorize(AuthorizationStatusTranslatorService.create("APPROVED"));
         assertSoftly(softly -> {
             softly.assertThat(authorization.id()).isNotNull();
             softly.assertThat(authorization.orderId()).isEqualTo("1234");
@@ -62,7 +63,8 @@ class AuthorizationTest {
 
     @Test
     void shouldBeRefuseAuthorization() {
-        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN).refuse();
+        final var authorization = Authorization.create("1234", "4321", BigDecimal.TEN)
+            .authorize(AuthorizationStatusTranslatorService.create("REFUSED"));
         assertSoftly(softly -> {
             softly.assertThat(authorization.id()).isNotNull();
             softly.assertThat(authorization.orderId()).isEqualTo("1234");

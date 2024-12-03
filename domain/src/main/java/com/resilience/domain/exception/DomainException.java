@@ -7,7 +7,7 @@ import java.util.List;
 
 public class DomainException extends NoStacktraceException {
 
-    private final List<Error> errors;
+    private final transient List<Error> errors;
 
     private DomainException(final String message) {
         super(message);
@@ -28,7 +28,7 @@ public class DomainException extends NoStacktraceException {
     }
 
     public List<Error> errors() {
-        return errors;
+        return this.errors;
     }
 
 }

@@ -110,3 +110,9 @@ logging:
     appender: CONSOLE
     pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %X{X-Request-ID} %highlight(%-5level) %magenta([%t]) %msg%n"
+
+# APPLICATION CONFIGURATION
+application:
+    clients:
+        authorization:
+            base-url: http://localhost:8081

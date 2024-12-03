@@ -17,3 +17,9 @@ spring:
 # LOGGING CONFIGURATION
 logging:
     appender: CONSOLE
+
+# APPLICATION CONFIGURATION
+application:
+    clients:
+        authorization:
+            base-url: http://localhost:{port}

@@ -4,6 +4,7 @@ import com.resilience.application.MockSupportTest;
 import com.resilience.domain.authorization.Authorization;
 import com.resilience.domain.authorization.AuthorizationGateway;
 import com.resilience.domain.authorization.AuthorizationId;
+import com.resilience.domain.authorization.AuthorizationStatusTranslatorService;
 import com.resilience.domain.common.Result;
 import com.resilience.domain.order.Order;
 import com.resilience.domain.order.OrderGateway;
@@ -52,7 +53,7 @@ class UpdateOrderUseCaseTest extends MockSupportTest {
         final var amount = BigDecimal.TEN;
         final var order = Order.create(customerId, amount);
         final var pendingAuthorization = Authorization.create(order.id().value(), order.customerId(), order.amount());
-        final var approvedAuthorization = pendingAuthorization.approve();
+        final var approvedAuthorization = pendingAuthorization.authorize(AuthorizationStatusTranslatorService.create("APPROVE"));
 
         when(this.orderGateway.findById(order.id())).thenReturn(Optional.of(order));
         when(this.authorizationGateway.process(any(Authorization.class))).thenReturn(approvedAuthorization);
@@ -92,7 +93,7 @@ class UpdateOrderUseCaseTest extends MockSupportTest {
         final var amount = BigDecimal.TEN;
         final var order = Order.create(customerId, amount);
         final var pendingAuthorization = Authorization.create(order.id().value(), order.customerId(), order.amount());
-        final var refusedAuthorization = pendingAuthorization.refuse();
+        final var refusedAuthorization = pendingAuthorization.authorize(AuthorizationStatusTranslatorService.create("REFUSED"));
 
         when(this.orderGateway.findById(order.id())).thenReturn(Optional.of(order));
         when(this.authorizationGateway.process(any(Authorization.class))).thenReturn(refusedAuthorization);
