@@ -2,12 +2,14 @@ package com.resiliente.orderapi.api;
 
 import com.resilience.domain.exception.DomainException;
 import com.resilience.domain.validation.Error;
+import com.resiliente.orderapi.integration.http.HttpIntegrationException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -124,6 +126,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiError> handleNoHandlerFoundException(final NoHandlerFoundException exception) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(HttpIntegrationException.class)
+    public ResponseEntity<ApiError> handleHttpIntegrationException(final HttpIntegrationException exception) {
+        final var responseBody = ApiError.from(exception.getMessage(), exception.errors().stream().map(Error::message).toList());
+        return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY)
+            .body(responseBody);
     }
 
     @ExceptionHandler(DomainException.class)

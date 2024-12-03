@@ -22,4 +22,8 @@ logging:
 application:
     clients:
         authorization:
-            base-url: http://localhost:{port}
+            base-url: http://localhost:9090
+            retrievable-min-backoff-in-seconds: 1
+            retrievable-max-backoff-in-seconds: 1
+            retrievable-jitter-factor: 0.1
+            timeout-in-seconds: 1

@@ -22,6 +22,7 @@
 
         <!-- DEPENDENCIES -->
         <spring-boot-dependencies.version>3.4.0</spring-boot-dependencies.version>
+        <spring-cloud-dependencies.version>2024.0.0</spring-cloud-dependencies.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
@@ -38,6 +39,13 @@
                 <artifactId>spring-boot-dependencies</artifactId>
                 <type>pom</type>
                 <version>${spring-boot-dependencies.version}</version>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud-dependencies.version}</version>
+                <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
@@ -113,6 +121,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-contract-wiremock</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -78,6 +78,7 @@ public class WebClientTemplate {
         this.webClient = WebClient.builder()
             .baseUrl(properties.getBaseUrl())
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .clientConnector(new ReactorClientHttpConnector(httpClient))
             .exchangeStrategies(exchangeStrategies)
             .build();
