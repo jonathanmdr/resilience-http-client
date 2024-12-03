@@ -27,7 +27,7 @@ public class OrderController implements OrderOpenApi {
 
     @Override
     public ResponseEntity<CreateOrderResponse> createOrder(final CreateOrderRequest request) {
-        final CreateOrderInput input = CreateOrderInput.with(request.customerId().toString(), request.amount());
+        final CreateOrderInput input = CreateOrderInput.with(request.customerId(), request.amount());
         final Result<CreateOrderOutput, ValidationHandler> result = this.createOrderUseCase.execute(input);
 
         if (result.hasError()) {

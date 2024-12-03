@@ -2,6 +2,8 @@ package com.resiliente.orderapi.api;
 
 import com.resilience.domain.exception.DomainException;
 import com.resilience.domain.validation.Error;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.commons.lang3.StringUtils;
@@ -132,8 +134,8 @@ public class GlobalExceptionHandler {
     }
 
     public record ApiError(
-        String detail,
-        List<String> errors
+        @Schema(example = "Order cannot be processed") String detail,
+        @ArraySchema(schema = @Schema(example = "Amount must be greater than zero")) List<String> errors
     ) {
 
         public static ApiError from(final Exception exception) {

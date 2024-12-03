@@ -21,7 +21,7 @@ class CreateOrderRequestIntegrationTest {
 
     @Test
     void testMarshall() throws IOException {
-        final CreateOrderRequest createOrderRequest = new CreateOrderRequest(UUID.randomUUID(), BigDecimal.valueOf(11.99));
+        final CreateOrderRequest createOrderRequest = new CreateOrderRequest(UUID.randomUUID().toString(), BigDecimal.valueOf(11.99));
         final JsonContent<CreateOrderRequest> jsonContent = this.jacksonTester.write(createOrderRequest);
 
         assertThat(jsonContent)
@@ -31,7 +31,7 @@ class CreateOrderRequestIntegrationTest {
 
     @Test
     void testUnmarshall() throws IOException {
-        final CreateOrderRequest createOrderRequest = new CreateOrderRequest(UUID.randomUUID(), BigDecimal.valueOf(11.99));
+        final CreateOrderRequest createOrderRequest = new CreateOrderRequest(UUID.randomUUID().toString(), BigDecimal.valueOf(11.99));
         final String json = """
             {
               "customer_id": "%s",

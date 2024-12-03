@@ -1,14 +1,12 @@
 package com.resiliente.orderapi.order.models;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public record CreateOrderRequest(
-    @NotNull UUID customerId,
-    @Positive BigDecimal amount
+    @Schema(example = "68d13800-d243-4a35-8177-b9fef6a0f395") String customerId,
+    @Schema(example = "11.99") BigDecimal amount
 ) {
 
 }
