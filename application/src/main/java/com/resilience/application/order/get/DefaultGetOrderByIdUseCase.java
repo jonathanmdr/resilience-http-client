@@ -28,7 +28,7 @@ public final class DefaultGetOrderByIdUseCase extends GetOrderByIdUseCase {
         }
 
         final Order order = retrievedOrder.get();
-        final GetOrderByIdOutput output = GetOrderByIdOutput.with(order.id().value(), order.customerId(), order.amount());
+        final GetOrderByIdOutput output = GetOrderByIdOutput.with(order.id().value(), order.customerId(), order.amount(), order.status().name());
 
         return Result.success(output);
     }

@@ -48,7 +48,7 @@ class GetOrderByIdUseCaseTest extends MockSupportTest {
             softly.assertThat(result.hasSuccess()).isTrue();
             softly.assertThat(result.success())
                 .isNotNull()
-                .isEqualTo(GetOrderByIdOutput.with(order.id().value(), order.customerId(), order.amount()));
+                .isEqualTo(GetOrderByIdOutput.with(order.id().value(), order.customerId(), order.amount(), order.status().name()));
         });
         verify(this.orderGateway).findById(order.id());
     }
