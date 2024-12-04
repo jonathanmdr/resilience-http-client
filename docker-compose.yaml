@@ -23,10 +23,54 @@ services:
       timeout: 5s
       retries: 6
 
+  order-api.broker:
+    image: docker.io/bitnami/kafka:3.7
+    container_name: order-api.broker
+    hostname: order-api.broker
+    restart: "no"
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_NODE_ID: 0
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@order-api.broker:19192
+      KAFKA_CFG_LISTENERS: "LISTENER_DOCKER_INTERNAL://:19092,CONTROLLER://:19192,LISTENER_DOCKER_EXTERNAL://:9092"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "LISTENER_DOCKER_INTERNAL://order-api.broker:19092,LISTENER_DOCKER_EXTERNAL://localhost:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "LISTENER_DOCKER_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:SASL_PLAINTEXT"
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "LISTENER_DOCKER_INTERNAL"
+      KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "PLAIN"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_SASL_MECHANISM_CONTROLLER_PROTOCOL: "PLAIN"
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_INTER_BROKER_USER: admin
+      KAFKA_INTER_BROKER_PASSWORD: admin
+      KAFKA_CLIENT_USERS: order-api
+      KAFKA_CLIENT_PASSWORDS: order-api
+    networks:
+      - order-api-network
+    volumes:
+      - kafka-order-api-data:/bitnami
+
+  order-api.kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: order-api.kafka-ui
+    restart: "no"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: ecommerce
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: order-api.broker:19092
+    ports:
+      - "8580:8080"
+    depends_on:
+      - order-api.broker
+    networks:
+      - order-api-network
+
 networks:
   order-api-network:
     driver: bridge
 
 volumes:
   mysql-data:
+    driver: local
+  kafka-order-api-data:
     driver: local

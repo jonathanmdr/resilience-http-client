@@ -1,5 +1,8 @@
 package com.resiliente.orderapi.api.controllers;
 
+import com.resilience.application.authorization.authorize.AuthorizeOrderInput;
+import com.resilience.application.authorization.authorize.AuthorizeOrderOutput;
+import com.resilience.application.authorization.authorize.AuthorizeOrderUseCase;
 import com.resilience.application.order.create.CreateOrderInput;
 import com.resilience.application.order.create.CreateOrderOutput;
 import com.resilience.application.order.create.CreateOrderUseCase;
@@ -10,6 +13,8 @@ import com.resilience.domain.common.Result;
 import com.resilience.domain.exception.DomainException;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resiliente.orderapi.api.OrderOpenApi;
+import com.resiliente.orderapi.autorization.models.AuthorizeOrderResponse;
+import com.resiliente.orderapi.autorization.presenter.AuthorizationPresenter;
 import com.resiliente.orderapi.order.models.CreateOrderRequest;
 import com.resiliente.orderapi.order.models.CreateOrderResponse;
 import com.resiliente.orderapi.order.models.GetOrderByIdResponse;
@@ -25,10 +30,12 @@ public class OrderController implements OrderOpenApi {
 
     private final GetOrderByIdUseCase getOrderByIdUseCase;
     private final CreateOrderUseCase createOrderUseCase;
+    private final AuthorizeOrderUseCase authorizeOrderUseCase;
 
-    public OrderController(final GetOrderByIdUseCase getOrderByIdUseCase, final CreateOrderUseCase createOrderUseCase) {
+    public OrderController(final GetOrderByIdUseCase getOrderByIdUseCase, final CreateOrderUseCase createOrderUseCase, final AuthorizeOrderUseCase authorizeOrderUseCase) {
         this.getOrderByIdUseCase = getOrderByIdUseCase;
         this.createOrderUseCase = createOrderUseCase;
+        this.authorizeOrderUseCase = authorizeOrderUseCase;
     }
 
     @Override
@@ -64,6 +71,21 @@ public class OrderController implements OrderOpenApi {
 
         return ResponseEntity.created(location)
             .body(OrderPresenter.from(output));
+    }
+
+    @Override
+    public ResponseEntity<AuthorizeOrderResponse> authorizeOrder(final String orderId) {
+        final AuthorizeOrderInput input = AuthorizeOrderInput.with(orderId);
+        final Result<AuthorizeOrderOutput, ValidationHandler> result = this.authorizeOrderUseCase.execute(input);
+
+        if (result.hasError()) {
+            final ValidationHandler validationHandler = result.error();
+            throw DomainException.with("Order cannot be authorized", validationHandler.errors());
+        }
+
+        final AuthorizeOrderOutput output = result.success();
+
+        return ResponseEntity.ok(AuthorizationPresenter.from(output));
     }
 
 }

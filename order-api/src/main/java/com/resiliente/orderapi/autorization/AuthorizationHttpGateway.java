@@ -4,6 +4,7 @@ import com.resilience.domain.authorization.Authorization;
 import com.resilience.domain.authorization.AuthorizationGateway;
 import com.resilience.domain.authorization.AuthorizationStatusTranslatorService;
 import com.resilience.domain.common.Result;
+import com.resilience.domain.events.DomainEventPublisher;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resiliente.orderapi.autorization.integration.AuthorizationClient;
 import com.resiliente.orderapi.autorization.integration.AuthorizationRequest;
@@ -15,9 +16,11 @@ import org.springframework.stereotype.Component;
 public class AuthorizationHttpGateway implements AuthorizationGateway {
 
     private final AuthorizationClient authorizationClient;
+    private final DomainEventPublisher domainEventPublisher;
 
-    public AuthorizationHttpGateway(final AuthorizationClient authorizationClient) {
+    public AuthorizationHttpGateway(final AuthorizationClient authorizationClient, final DomainEventPublisher domainEventPublisher) {
         this.authorizationClient = authorizationClient;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Override
@@ -31,8 +34,11 @@ public class AuthorizationHttpGateway implements AuthorizationGateway {
         }
 
         final AuthorizationResponse response = result.success();
+        final Authorization processedAuthorization = authorization.authorize(AuthorizationStatusTranslatorService.create(response.status()));
 
-        return authorization.authorize(AuthorizationStatusTranslatorService.create(response.status()));
+        processedAuthorization.dispatch(this.domainEventPublisher);
+
+        return processedAuthorization;
     }
 
 }

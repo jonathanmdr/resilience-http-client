@@ -92,6 +92,34 @@ spring:
             "[hibernate.order_inserts]": true
             "[hibernate.order_updates]": true
 
+# SPRING CLOUD CONFIGURATION
+    cloud:
+        stream:
+            kafka:
+                binder:
+                    auto-create-topics: true
+            bindings:
+                authorizationOrderEvents-out-0:
+                    destination: authorization-order-events
+                    binder: ecommerce
+            binders:
+                ecommerce:
+                    type: kafka
+                    environment:
+                        spring:
+                            cloud:
+                                stream:
+                                    kafka:
+                                        binder:
+                                            brokers: localhost:9092
+                                            configuration:
+                                                security:
+                                                    protocol: SASL_PLAINTEXT
+                                                sasl:
+                                                    mechanism: PLAIN
+                                                    jaas:
+                                                        config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"order-api\" password=\"order-api\";"
+
 # OPEN API CONFIGURATION
 springdoc:
     api-docs:
