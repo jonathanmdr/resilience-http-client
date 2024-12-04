@@ -7,6 +7,7 @@ import com.resilience.domain.validation.handler.NotificationHandler;
 import com.resiliente.orderapi.autorization.integration.AuthorizationClientConfiguration.AuthorizationClientProperties;
 import com.resiliente.orderapi.integration.http.BaseClientProperties;
 import com.resiliente.orderapi.integration.http.WebClientTemplate;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 import javax.net.ssl.SSLException;
 
 @Component
-public final class AuthorizationClient extends WebClientTemplate {
+public class AuthorizationClient extends WebClientTemplate {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizationClient.class);
 
@@ -24,6 +25,7 @@ public final class AuthorizationClient extends WebClientTemplate {
         super(properties);
     }
 
+    @CircuitBreaker(name = "authorizationCircuitBreaker", fallbackMethod = "authorizeFallback")
     public Result<AuthorizationResponse, ValidationHandler> authorize(final AuthorizationRequest request) {
         try {
             final AuthorizationResponse authorization = this.webClient.post()
@@ -42,6 +44,11 @@ public final class AuthorizationClient extends WebClientTemplate {
             final Error error = new Error("Authorization client failed with message: '%s'".formatted(ex.getMessage()));
             return Result.error(NotificationHandler.create(error));
         }
+    }
+
+    public Result<AuthorizationResponse, ValidationHandler> authorizeFallback(final Throwable throwable) {
+        final Error error = new Error("Authorization client failed with message: '%s'".formatted(throwable.getMessage()));
+        return Result.error(NotificationHandler.create(error));
     }
 
 }

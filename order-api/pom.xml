@@ -26,6 +26,7 @@
         <springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+        <resilience4j-spring-boot3.version>2.2.0</resilience4j-spring-boot3.version>
 
         <!-- TEST DEPENDENCIES -->
         <commons-io.version>2.18.0</commons-io.version>
@@ -111,6 +112,11 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash-logback-encoder.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>${resilience4j-spring-boot3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

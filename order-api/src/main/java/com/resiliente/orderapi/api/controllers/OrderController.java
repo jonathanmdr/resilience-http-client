@@ -19,6 +19,7 @@ import com.resiliente.orderapi.order.models.CreateOrderRequest;
 import com.resiliente.orderapi.order.models.CreateOrderResponse;
 import com.resiliente.orderapi.order.models.GetOrderByIdResponse;
 import com.resiliente.orderapi.order.presenter.OrderPresenter;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -38,6 +39,7 @@ public class OrderController implements OrderOpenApi {
         this.authorizeOrderUseCase = authorizeOrderUseCase;
     }
 
+    @RateLimiter(name = "getOrderByIdRateLimiter", fallbackMethod = "rateLimiterFallback")
     @Override
     public ResponseEntity<GetOrderByIdResponse> getOrderById(final String orderId) {
         final GetOrderByIdInput input = GetOrderByIdInput.with(orderId);

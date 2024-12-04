@@ -29,7 +29,7 @@ management:
         web:
             base-path: /
             exposure:
-                include: health
+                include: health,circuitbreakers,circuitbreakerevents,ratelimiters,ratelimiterevents
 
 # DATABASE CONFIGURATIONS
 database:
@@ -138,6 +138,33 @@ logging:
     appender: CONSOLE
     pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %X{X-Request-ID} %highlight(%-5level) %magenta([%t]) %msg%n"
+
+# CIRCUIT BREAKER CONFIGURATION
+resilience4j:
+    circuitbreaker:
+        configs:
+            default:
+                registerHealthIndicator: true
+                failureRateThreshold: 50
+                slowCallRateThreshold: 50
+                slowCallDurationThreshold: 5s
+                permittedNumberOfCallsInHalfOpenState: 3
+                slidingWindowType: COUNT_BASED
+                slidingWindowSize: 10
+                minimumNumberOfCalls: 5
+                waitDurationInOpenState: 30s
+        instances:
+            authorizationCircuitBreaker:
+                base-config: default
+
+# RATE LIMITER CONFIGURATION
+    ratelimiter:
+        instances:
+            getOrderByIdRateLimiter:
+                registerHealthIndicator: true
+                limitForPeriod: 10
+                limitRefreshPeriod: 30s
+                timeoutDuration: 100ms
 
 # APPLICATION CONFIGURATION
 application:

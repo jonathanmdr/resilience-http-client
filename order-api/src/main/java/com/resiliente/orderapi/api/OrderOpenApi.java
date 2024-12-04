@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -196,5 +197,9 @@ public interface OrderOpenApi {
         )
         @PathVariable("order_id") @NotBlank final String orderId
     );
+
+    default ResponseEntity<ApiError> rateLimiterFallback(final Exception exception) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ApiError.from(exception));
+    }
 
 }
