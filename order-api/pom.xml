@@ -11,7 +11,7 @@
 
     <groupId>com.resilience.orderapi</groupId>
     <artifactId>order-api</artifactId>
-    <version>${project.parent.version}</version>
+    <version>0.0.1</version>
 
     <properties>
         <!-- PROJECT -->
@@ -32,6 +32,7 @@
 
         <!-- BUILD -->
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     </properties>
 
@@ -102,7 +103,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
         </dependency>
@@ -126,12 +127,12 @@
         <dependency>
             <groupId>com.resilience.application</groupId>
             <artifactId>application</artifactId>
-            <version>${project.parent.version}</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.resilience.domain</groupId>
             <artifactId>domain</artifactId>
-            <version>${project.parent.version}</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -194,10 +195,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

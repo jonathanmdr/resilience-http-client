@@ -38,6 +38,33 @@ class AuthorizationClientIntegrationTest {
     private AuthorizationClient subject;
 
     @Test
+    void shouldBeProcessAuthorization() {
+        final AuthorizationResponse response = AuthorizationResponse.with("APPROVED");
+        stubFor(post(urlEqualTo("/v1/authorizations"))
+            .willReturn(aResponse()
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(Json.writeValueAsString(response))
+            )
+       );
+        final AuthorizationRequest request = AuthorizationRequest.with("1234", "4321", "5678", BigDecimal.valueOf(199.99));
+        final Result<AuthorizationResponse, ValidationHandler> result = this.subject.authorize(request);
+
+        assertThat(result).satisfies(actual -> {
+            assertThat(actual.hasSuccess()).isTrue();
+            assertThat(actual.success()).isEqualTo(response);
+        });
+        verify(1, postRequestedFor(urlEqualTo("/v1/authorizations"))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
+            .withRequestBody(matchingJsonPath("$.order_id", equalTo("4321")))
+            .withRequestBody(matchingJsonPath("$.customer_id", equalTo("5678")))
+            .withRequestBody(matchingJsonPath("$.order_amount", equalTo("199.99")))
+        );
+    }
+
+    @Test
     void givenAValidHttpStatusToRetryShouldBeApplyRetry() {
         final AuthorizationResponse response = AuthorizationResponse.with("APPROVED");
         stubFor(post(urlEqualTo("/v1/authorizations"))
@@ -83,6 +110,35 @@ class AuthorizationClientIntegrationTest {
             assertThat(actual.success()).isEqualTo(response);
         });
         verify(4, postRequestedFor(urlEqualTo("/v1/authorizations"))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
+            .withRequestBody(matchingJsonPath("$.order_id", equalTo("4321")))
+            .withRequestBody(matchingJsonPath("$.customer_id", equalTo("5678")))
+            .withRequestBody(matchingJsonPath("$.order_amount", equalTo("199.99")))
+        );
+    }
+
+    @Test
+    void givenAInvalidHttpStatusToRetryShouldBeReturnError() {
+        stubFor(post(urlEqualTo("/v1/authorizations"))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.TOO_MANY_REQUESTS.value())
+            )
+        );
+
+        final AuthorizationRequest request = AuthorizationRequest.with("1234", "4321", "5678", BigDecimal.valueOf(199.99));
+        final Result<AuthorizationResponse, ValidationHandler> result = this.subject.authorize(request);
+
+        assertThat(result).satisfies(actual -> {
+            assertThat(actual.hasError()).isTrue();
+            assertThat(actual.error()).satisfies(validationHandler -> {
+                assertThat(validationHandler.hasErrors()).isTrue();
+                assertThat(validationHandler.errors()).hasSize(1);
+                assertThat(validationHandler.errors().getFirst().message()).isEqualTo("Authorization client failed with message: '429 Too Many Requests from POST http://localhost:9090/v1/authorizations'");
+            });
+        });
+        verify(1, postRequestedFor(urlEqualTo("/v1/authorizations"))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
