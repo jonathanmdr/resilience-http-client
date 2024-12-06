@@ -46,7 +46,7 @@ public class AuthorizationClient extends WebClientTemplate {
         }
     }
 
-    public Result<AuthorizationResponse, ValidationHandler> authorizeFallback(final Throwable throwable) {
+    private Result<AuthorizationResponse, ValidationHandler> authorizeFallback(final Throwable throwable) {
         final Error error = new Error("Authorization client failed with message: '%s'".formatted(throwable.getMessage()));
         return Result.error(NotificationHandler.create(error));
     }

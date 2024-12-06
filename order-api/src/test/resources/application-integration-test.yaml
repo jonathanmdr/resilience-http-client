@@ -18,6 +18,33 @@ spring:
 logging:
     appender: CONSOLE
 
+# CIRCUIT BREAKER CONFIGURATION
+resilience4j:
+    circuitbreaker:
+        configs:
+            default:
+                registerHealthIndicator: true
+                failureRateThreshold: 50
+                slowCallRateThreshold: 50
+                slowCallDurationThreshold: 2s
+                permittedNumberOfCallsInHalfOpenState: 1
+                slidingWindowType: COUNT_BASED
+                slidingWindowSize: 5
+                minimumNumberOfCalls: 5
+                waitDurationInOpenState: 1s
+        instances:
+            authorizationCircuitBreaker:
+                base-config: default
+
+# RATE LIMITER CONFIGURATION
+    ratelimiter:
+        instances:
+            getOrderByIdRateLimiter:
+                registerHealthIndicator: true
+                limitForPeriod: 2
+                limitRefreshPeriod: 5s
+                timeoutDuration: 1ms
+
 # APPLICATION CONFIGURATION
 application:
     clients:
