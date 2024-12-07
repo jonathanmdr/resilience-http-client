@@ -1,0 +1,93 @@
+# DATABASE CONFIGURATIONS
+database:
+    url: localhost:3306
+    schema-name: ecommerce
+    username: root
+    password: root
+
+# SPRING CONFIGURATION
+spring:
+    application:
+        name: @project.name@
+        version: @project.version@
+    main:
+        banner-mode: "off"
+
+# SPRING VIRTUAL THREADS FOR JAVA 21
+    threads:
+        virtual:
+            enabled: true
+
+# SPRING DATA JPA CONFIGURATION
+    datasource:
+        url: jdbc:mysql://${database.url}/${database.schema-name}?serverTimezone=UTC&characterEncoding=UTF-8&rewriteBatchedStatements=true
+        username: ${database.username}
+        password: ${database.password}
+        hikari:
+            auto-commit: false
+            connection-timeout: 10000 # milliseconds (10 seconds)
+            max-lifetime: 600000      # milliseconds (10 minutes)
+            maximum-pool-size: 20     # max connections per replica
+            minimum-idle: 10          # min connections per replica
+            idle-timeout: 300000      # milliseconds (5 minutes)
+            pool-name: ${spring.application.name}
+    jpa:
+        open-in-view: false
+        show-sql: false
+        hibernate:
+            ddl-auto: none
+        properties:
+            "[hibernate.dialect.storage_engine]": innodb
+            "[hibernate.generate_statistics]": false
+            "[hibernate.connection.provider_disables_autocommit]": true
+            "[hibernate.jdbc.batch_size]": 20
+            "[hibernate.order_inserts]": true
+            "[hibernate.order_updates]": true
+
+# SPRING CLOUD CONFIGURATION
+    cloud:
+        function:
+            definition: authorizationProcessedConsumer
+        stream:
+            kafka:
+                binder:
+                    auto-create-topics: true
+                bindings:
+                    authorizationProcessedConsumer-in-0:
+                        consumer:
+                            enableDlq: true
+                            dlqName: authorization-order-events-dlt
+                            dlqPartitions: 1
+                            autoCommitOnError: true
+                            autoCommitOffset: true
+            bindings:
+                authorizationProcessedConsumer-in-0:
+                    destination: authorization-order-events
+                    group: ${spring.application.name}
+                    binder: ecommerce
+            binders:
+                ecommerce:
+                    type: kafka
+                    environment:
+                        spring:
+                            cloud:
+                                stream:
+                                    kafka:
+                                        binder:
+                                            brokers: localhost:9092
+                                            configuration:
+                                                security:
+                                                    protocol: SASL_PLAINTEXT
+                                                sasl:
+                                                    mechanism: PLAIN
+                                                    jaas:
+                                                        config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"order-worker\" password=\"order-worker\";"
+
+# LOGGING CONFIGURATION
+logging:
+    level:
+        ROOT: INFO
+        com.resilience: INFO
+    appender: CONSOLE
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %X{X-Request-ID} %highlight(%-5level) %magenta([%t]) %msg%n"

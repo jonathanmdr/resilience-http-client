@@ -1,0 +1,19 @@
+# THIS FILE SHOULD BE CONTAINING FAKE DATA FOR TESTS ONLY
+
+# DATABASE CONFIGURATIONS
+spring:
+    datasource:
+        driver-class-name: org.h2.Driver
+        url: jdbc:h2:mem:ecommerce;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+        username: root
+        password: root
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+        properties:
+            "[hibernate.format_sql]": true
+
+# LOGGING CONFIGURATION
+logging:
+    appender: CONSOLE

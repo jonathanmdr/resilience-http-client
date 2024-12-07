@@ -44,8 +44,8 @@ services:
       KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_INTER_BROKER_USER: admin
       KAFKA_INTER_BROKER_PASSWORD: admin
-      KAFKA_CLIENT_USERS: order-api
-      KAFKA_CLIENT_PASSWORDS: order-api
+      KAFKA_CLIENT_USERS: order-api;order-worker
+      KAFKA_CLIENT_PASSWORDS: order-api;order-worker
     networks:
       - order-api-network
     volumes:

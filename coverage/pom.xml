@@ -40,6 +40,11 @@
             <artifactId>order-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.resilience.orderworker</groupId>
+            <artifactId>order-worker</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
