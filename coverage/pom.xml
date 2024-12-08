@@ -45,6 +45,11 @@
             <artifactId>order-worker</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.resilience.authorizationapi</groupId>
+            <artifactId>authorization-api</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

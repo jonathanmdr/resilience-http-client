@@ -13,10 +13,33 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/bitnami/mysql/data
-      - ./migrations/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
+      - mysql-order-api-data:/bitnami/mysql/data
+      - ./migrations/ecommerce/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
     networks:
-      - order-api-network
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD", "/opt/bitnami/scripts/mysql/healthcheck.sh" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  authorization-api.database:
+    image: docker.io/bitnami/mysql:8.0
+    container_name: authorization-api.database
+    hostname: authorization-api.database
+    restart: "no"
+    environment:
+      MYSQL_USER: admin
+      MYSQL_DATABASE: authorizations
+      ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-authorization-api-data:/bitnami/mysql/data
+      - ./migrations/authorizations/V0001_create-table-authorizations.sql:/docker-entrypoint-initdb.d/V0001_create-table-authorizations.sql
+    networks:
+      - ecommerce-network
     healthcheck:
       test: [ "CMD", "/opt/bitnami/scripts/mysql/healthcheck.sh" ]
       interval: 15s
@@ -47,7 +70,7 @@ services:
       KAFKA_CLIENT_USERS: order-api;order-worker
       KAFKA_CLIENT_PASSWORDS: order-api;order-worker
     networks:
-      - order-api-network
+      - ecommerce-network
     volumes:
       - kafka-order-api-data:/bitnami
 
@@ -63,14 +86,16 @@ services:
     depends_on:
       - order-api.broker
     networks:
-      - order-api-network
+      - ecommerce-network
 
 networks:
-  order-api-network:
+  ecommerce-network:
     driver: bridge
 
 volumes:
-  mysql-data:
+  mysql-order-api-data:
+    driver: local
+  mysql-authorization-api-data:
     driver: local
   kafka-order-api-data:
     driver: local

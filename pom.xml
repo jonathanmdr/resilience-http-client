@@ -15,6 +15,7 @@
         <module>coverage</module>
         <module>order-api</module>
         <module>order-worker</module>
+        <module>authorization-api</module>
     </modules>
 
     <properties>
