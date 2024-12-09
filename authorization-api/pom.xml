@@ -25,6 +25,7 @@
         <springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+        <domain.version>0.0.1</domain.version>
 
         <!-- TEST DEPENDENCIES -->
         <awaitility.version>4.2.2</awaitility.version>
@@ -99,6 +100,11 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash-logback-encoder.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.resilience.domain</groupId>
+            <artifactId>domain</artifactId>
+            <version>${domain.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
