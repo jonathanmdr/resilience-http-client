@@ -140,8 +140,6 @@ class AuthorizationTest {
 
     private static Stream<Arguments> provideInvalidAuthorizationToValidate() {
         return Stream.of(
-            Arguments.of(Authorization.create(null, "4321", BigDecimal.TEN), new Error("Order id must not be null or blank")),
-            Arguments.of(Authorization.create(" ", "4321", BigDecimal.TEN), new Error("Order id must not be null or blank")),
             Arguments.of(Authorization.create("1234", null, BigDecimal.TEN), new Error("Customer id must not be null or blank")),
             Arguments.of(Authorization.create("1234", " ", BigDecimal.TEN), new Error("Customer id must not be null or blank")),
             Arguments.of(Authorization.create("1234", "4321", null), new Error("Order amount must be greater than zero")),

@@ -47,7 +47,7 @@ spring:
 # SPRING CLOUD CONFIGURATION
     cloud:
         function:
-            definition: authorizationProcessedConsumer
+            definition: authorizationProcessedConsumer;authorizationProcessedDltConsumer
         stream:
             kafka:
                 binder:
@@ -60,9 +60,20 @@ spring:
                             dlqPartitions: 1
                             autoCommitOnError: true
                             autoCommitOffset: true
+                    authorizationProcessedDltConsumer-in-0:
+                        consumer:
+                            enableDlq: false
+                            dlqName: authorization-order-events-dlt
+                            dlqPartitions: 1
+                            autoCommitOnError: false
+                            autoCommitOffset: true
             bindings:
                 authorizationProcessedConsumer-in-0:
                     destination: authorization-order-events
+                    group: ${spring.application.name}
+                    binder: ecommerce
+                authorizationProcessedDltConsumer-in-0:
+                    destination: authorization-order-events-dlt
                     group: ${spring.application.name}
                     binder: ecommerce
             binders:

@@ -1,7 +1,10 @@
 package com.resilience.domain.authorization;
 
 import com.resilience.domain.Identifier;
+import com.resilience.domain.exception.DomainException;
+import com.resilience.domain.validation.Error;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -13,8 +16,13 @@ public final class AuthorizationId extends Identifier {
         this.value = value;
     }
 
-    public static AuthorizationId unique() {
-        return AuthorizationId.from(String.valueOf(UUID.randomUUID()));
+    public static AuthorizationId unique(final String reference) {
+        if (reference == null || reference.isBlank()) {
+            throw DomainException.with(new Error("Reference cannot be null or empty"));
+        }
+
+        final UUID uuid = UUID.nameUUIDFromBytes(reference.getBytes(StandardCharsets.UTF_8));
+        return AuthorizationId.from(String.valueOf(uuid));
     }
 
     public static AuthorizationId from(final String unique) {

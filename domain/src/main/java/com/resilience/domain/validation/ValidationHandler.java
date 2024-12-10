@@ -4,10 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-@FunctionalInterface
 public interface ValidationHandler {
 
     ValidationHandler append(final Error error);
+
+    void validate(final Validation validation);
 
     default List<Error> errors() {
         return Collections.emptyList();
@@ -23,6 +24,12 @@ public interface ValidationHandler {
 
     default Optional<Error> lastError() {
         return hasErrors() ? Optional.of(errors().getLast()) : Optional.empty();
+    }
+
+    interface Validation {
+
+        void validate(final ValidationHandler handler);
+
     }
 
 }

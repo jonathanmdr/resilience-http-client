@@ -34,6 +34,10 @@ public final class Order extends AggregateRoot<OrderId> {
         };
     }
 
+    public boolean isFinalized() {
+        return !this.orderStatus.hasMoreTransitions();
+    }
+
     @Override
     public void validate(final ValidationHandler handler) {
         OrderValidator.create(this, handler).validate();

@@ -3,13 +3,15 @@ package com.resilience.domain.authorization;
 import com.resilience.domain.StubId;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthorizationIdTest {
 
     @Test
     void shouldCreateAuthorizationId() {
-        final AuthorizationId authorizationId = AuthorizationId.unique();
+        final AuthorizationId authorizationId = AuthorizationId.unique(UUID.randomUUID().toString());
         assertThat(authorizationId)
             .isNotNull()
             .satisfies(generatedAuthorizationId -> assertThat(generatedAuthorizationId)
@@ -61,7 +63,7 @@ class AuthorizationIdTest {
     void shouldNotBeTheSameAuthorizationIdByInstances() {
         final AuthorizationId authorizationId = AuthorizationId.from("authorization-id");
         final StubId stubId = StubId.from("stub-id");
-        assertThat(authorizationId).isNotEqualTo(stubId);
+        assertThat(authorizationId).isNotEqualTo(stubId); // NOSONAR
     }
 
 }

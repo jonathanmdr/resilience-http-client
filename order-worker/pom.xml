@@ -24,6 +24,8 @@
         <spring-boot-dependencies.version>3.4.0</spring-boot-dependencies.version>
         <spring-cloud-dependencies.version>2024.0.0</spring-cloud-dependencies.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+        <jackson-databind.version>2.18.2</jackson-databind.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
 
         <!-- TEST DEPENDENCIES -->
         <commons-io.version>2.18.0</commons-io.version>
@@ -81,7 +83,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.18.2</version>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -98,12 +105,12 @@
         <dependency>
             <groupId>com.resilience.application</groupId>
             <artifactId>application</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.resilience.domain</groupId>
             <artifactId>domain</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

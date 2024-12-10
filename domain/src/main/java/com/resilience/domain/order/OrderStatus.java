@@ -12,6 +12,11 @@ public enum OrderStatus {
         public OrderStatus reject() {
             return REJECTED;
         }
+
+        @Override
+        public boolean hasMoreTransitions() {
+            return true;
+        }
     },
     CONFIRMED {
         @Override
@@ -22,6 +27,11 @@ public enum OrderStatus {
         @Override
         public OrderStatus reject() {
             return this;
+        }
+
+        @Override
+        public boolean hasMoreTransitions() {
+            return false;
         }
     },
     REJECTED {
@@ -34,9 +44,15 @@ public enum OrderStatus {
         public OrderStatus reject() {
             return this;
         }
+
+        @Override
+        public boolean hasMoreTransitions() {
+            return false;
+        }
     };
 
     public abstract OrderStatus confirm();
     public abstract OrderStatus reject();
+    public abstract boolean hasMoreTransitions();
 
 }

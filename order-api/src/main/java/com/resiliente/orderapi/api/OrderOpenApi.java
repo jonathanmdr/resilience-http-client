@@ -1,5 +1,6 @@
 package com.resiliente.orderapi.api;
 
+import com.resilience.domain.exception.NoStacktraceException;
 import com.resiliente.orderapi.api.GlobalExceptionHandler.ApiError;
 import com.resiliente.orderapi.autorization.models.AuthorizeOrderResponse;
 import com.resiliente.orderapi.order.models.CreateOrderRequest;
@@ -57,6 +58,16 @@ public interface OrderOpenApi {
             @ApiResponse(
                 responseCode = "422",
                 description = "Request body or params is invalid",
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                        implementation = ApiError.class
+                    )
+                )
+            ),
+            @ApiResponse(
+                responseCode = "429",
+                description = "Rate limit exceeded",
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(
@@ -198,8 +209,13 @@ public interface OrderOpenApi {
         @PathVariable("order_id") @NotBlank final String orderId
     );
 
-    default ResponseEntity<ApiError> rateLimiterFallback(final Exception exception) {
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ApiError.from(exception));
+    @SuppressWarnings("all")
+    default ResponseEntity<ApiError> rateLimiterFallback(final Exception exception) throws Exception {
+        if (exception instanceof NoStacktraceException) {
+            throw exception;
+        }
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(ApiError.from(exception));
     }
 
 }

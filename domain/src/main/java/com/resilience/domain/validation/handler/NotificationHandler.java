@@ -1,5 +1,6 @@
 package com.resilience.domain.validation.handler;
 
+import com.resilience.domain.exception.DomainException;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 
@@ -30,6 +31,17 @@ public final class NotificationHandler implements ValidationHandler {
     public NotificationHandler append(final Error error) {
         this.errors.add(error);
         return this;
+    }
+
+    @Override
+    public void validate(final Validation validation) {
+        try {
+            validation.validate(this);
+        } catch (final DomainException ex) {
+            this.errors.addAll(ex.errors());
+        } catch (final Exception ex) {
+            this.errors.add(new Error(ex.getMessage()));
+        }
     }
 
     @Override

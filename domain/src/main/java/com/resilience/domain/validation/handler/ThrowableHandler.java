@@ -17,4 +17,13 @@ public final class ThrowableHandler implements ValidationHandler {
         throw DomainException.with(error);
     }
 
+    @Override
+    public void validate(final Validation validation) {
+        try {
+            validation.validate(this);
+        } catch (final Exception ex) {
+            throw DomainException.with(new Error(ex.getMessage()));
+        }
+    }
+
 }

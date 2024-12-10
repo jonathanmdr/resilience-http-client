@@ -28,7 +28,7 @@ public final class Authorization extends AggregateRoot<AuthorizationId> {
     }
 
     public static Authorization create(final String orderId, final String customerId, final BigDecimal orderAmount) {
-        return new Authorization(AuthorizationId.unique(), orderId, customerId, orderAmount, AuthorizationStatus.PENDING);
+        return new Authorization(AuthorizationId.unique(orderId), orderId, customerId, orderAmount, AuthorizationStatus.PENDING);
     }
 
     public static Authorization with(final AuthorizationId id, final String orderId, final String customerId, final BigDecimal orderAmount, final AuthorizationStatus authorizationStatus) {
