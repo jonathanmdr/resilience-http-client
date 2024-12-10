@@ -21,10 +21,10 @@ public final class AuthorizationProcessedEventValidator extends Validator {
 
     @Override
     public void validate() {
-        this.checkOrderConstraints();
+        this.checkAuthorizationProcessedEventConstraints();
     }
 
-    private void checkOrderConstraints() {
+    private void checkAuthorizationProcessedEventConstraints() {
         if (this.authorizationProcessedEvent.authorizationId() == null || this.authorizationProcessedEvent.authorizationId().isBlank()) {
             super.validationHandler().append(new Error("Authorization id must not be null or blank"));
         }

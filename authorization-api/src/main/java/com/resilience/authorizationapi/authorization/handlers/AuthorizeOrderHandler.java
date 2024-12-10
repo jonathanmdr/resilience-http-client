@@ -5,6 +5,8 @@ import com.resilience.authorizationapi.authorization.models.AuthorizationRespons
 import com.resilience.authorizationapi.authorization.persistence.AuthorizationJpaEntity;
 import com.resilience.authorizationapi.authorization.persistence.AuthorizationRepository;
 import com.resilience.authorizationapi.common.ValidationException;
+import com.resilience.authorizationapi.featuretoggle.Feature;
+import com.resilience.authorizationapi.featuretoggle.FeatureToggle;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -34,6 +36,18 @@ public class AuthorizeOrderHandler implements HandlerFunction<ServerResponse> {
     @SuppressWarnings("all")
     @Override
     public ServerResponse handle(final ServerRequest serverRequest) throws Exception {
+        if (FeatureToggle.isEnabled(Feature.LATENCY)) {
+            Thread.currentThread().sleep(Feature.LATENCY.value());
+        }
+
+        if (FeatureToggle.isEnabled(Feature.UNAVAILABLE)) {
+            return ServerResponse.status(Feature.UNAVAILABLE.value()).build();
+        }
+
+        if (FeatureToggle.isEnabled(Feature.TIMEOUT)) {
+            return ServerResponse.status(Feature.TIMEOUT.value()).build();
+        }
+
         final AuthorizationRequest request = serverRequest.body(AuthorizationRequest.class);
         final BindingResult bindingResult = new BeanPropertyBindingResult(this, request.getClass().getSimpleName());
         this.smartValidator.validate(request, bindingResult);
