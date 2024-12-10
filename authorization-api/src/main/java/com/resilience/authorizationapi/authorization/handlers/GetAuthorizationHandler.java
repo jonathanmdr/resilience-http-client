@@ -21,21 +21,17 @@ public class GetAuthorizationHandler implements HandlerFunction<ServerResponse> 
 
     @SuppressWarnings("all")
     @Override
-    public ServerResponse handle(final ServerRequest serverRequest) throws Exception {
+    public ServerResponse handle(final ServerRequest serverRequest) {
         final String authorizationId = serverRequest.pathVariable("authorization_id");
 
-        if (authorizationId == null || authorizationId.isEmpty()) {
+        if (authorizationId.isBlank()) {
             throw new NoStacktraceException("Authorization ID is required");
         }
 
         final Optional<AuthorizationJpaEntity> entityExists = this.authorizationRepository.findById(authorizationId);
 
-        if (entityExists.isPresent()) {
-            return ServerResponse.ok()
-                .body(entityExists.get().toResponse());
-        }
-
-        return ServerResponse.notFound().build();
+        return entityExists.map(entity -> ServerResponse.ok().body(entity.toResponse()))
+            .orElseGet(() -> ServerResponse.notFound().build());
     }
 
 }

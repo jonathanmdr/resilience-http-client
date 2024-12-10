@@ -4,12 +4,12 @@ import com.resilience.authorizationapi.api.AuthorizationOpenApi;
 import com.resilience.authorizationapi.authorization.handlers.AuthorizeOrderHandler;
 import com.resilience.authorizationapi.authorization.handlers.GetAuthorizationHandler;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
-@Configuration
+@Component
 public class AuthorizationRouter {
 
     @Bean
