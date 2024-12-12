@@ -9,8 +9,8 @@ import java.util.List;
 public class BaseClientProperties {
 
     private static final List<Integer> DEFAULT_RETRIEVABLE_HTTP_STATUS_CODES = List.of(500, 502, 503, 504);
-    private static final int DEFAULT_MIN_BACKOFF_IN_SECONDS = 2;
-    private static final int DEFAULT_MAX_BACKOFF_IN_SECONDS = 10;
+    private static final int DEFAULT_MIN_BACKOFF_IN_SECONDS = 1;
+    private static final int DEFAULT_MAX_BACKOFF_IN_SECONDS = 5;
     private static final int DEFAULT_MAX_ATTEMPTS = 3;
     private static final double DEFAULT_JITTER_FACTOR = 0.75;
     private static final int DEFAULT_TIMEOUT_IN_SECONDS = 5;
@@ -40,13 +40,8 @@ public class BaseClientProperties {
     }
 
     public List<HttpStatusCode> getRetrievableHttpErrors() {
-        if (this.retrievableHttpStatusCodes == null || this.retrievableHttpStatusCodes.isEmpty()) {
-            return DEFAULT_RETRIEVABLE_HTTP_STATUS_CODES.stream()
-                .map(HttpStatusCode::valueOf)
-                .toList();
-        }
-
-        return this.retrievableHttpStatusCodes.stream()
+        return this.getRetrievableHttpStatusCodes()
+            .stream()
             .map(HttpStatusCode::valueOf)
             .toList();
     }
@@ -64,7 +59,7 @@ public class BaseClientProperties {
     }
 
     public double getRetrievableJitterFactor() {
-        return Math.abs(this.retrievableJitterFactor - 0.0) < EPSILON ? DEFAULT_JITTER_FACTOR : this.retrievableJitterFactor;
+        return Math.abs(this.retrievableJitterFactor) < EPSILON ? DEFAULT_JITTER_FACTOR : this.retrievableJitterFactor;
     }
 
     public int getTimeoutInSeconds() {
