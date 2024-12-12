@@ -21,10 +21,10 @@ public final class AuthorizationValidator extends Validator {
 
     @Override
     public void validate() {
-        this.checkOrderConstraints();
+        this.checkAuthorizationConstraints();
     }
 
-    private void checkOrderConstraints() {
+    private void checkAuthorizationConstraints() {
         if (this.authorization.orderId() == null || this.authorization.orderId().isBlank()) {
             super.validationHandler().append(new Error("Order id must not be null or blank"));
         }
@@ -33,6 +33,9 @@ public final class AuthorizationValidator extends Validator {
         }
         if (this.authorization.orderAmount() == null || this.authorization.orderAmount().compareTo(BigDecimal.ZERO) <= 0) {
             super.validationHandler().append(new Error("Order amount must be greater than zero"));
+        }
+        if (this.authorization.status() == null) {
+            super.validationHandler().append(new Error("Authorization status cannot be null"));
         }
     }
 

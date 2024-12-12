@@ -17,7 +17,7 @@ public final class AuthorizationStatusTranslatorService implements Authorization
         return switch (this.authorizationStatus) {
             case "APPROVED" -> AuthorizationStatus.APPROVED;
             case "REFUSED" -> AuthorizationStatus.REFUSED;
-            default -> AuthorizationStatus.PENDING;
+            case null, default -> AuthorizationStatus.PENDING;
         };
     }
 

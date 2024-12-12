@@ -1,51 +1,48 @@
 package com.resilience.domain.order;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderStatusTest {
 
-    @Test
-    void whenCreatedHasConfirmedThenReturnConfirmed() {
-        final OrderStatus status = OrderStatus.CREATED;
+    @ParameterizedTest
+    @CsvSource(
+        value = {
+            "CREATED, CONFIRMED",
+            "CONFIRMED, CONFIRMED",
+            "REJECTED, REJECTED"
+        }
+    )
+    void validateTransitionsWhenConfirm(final OrderStatus status, final OrderStatus expected) {
         final OrderStatus actual = status.confirm();
-        assertThat(actual).isEqualTo(OrderStatus.CONFIRMED);
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void whenCreatedHasRejectedThenReturnRejected() {
-        final OrderStatus status = OrderStatus.CREATED;
+    @ParameterizedTest
+    @CsvSource(
+        value = {
+            "CREATED, REJECTED",
+            "CONFIRMED, CONFIRMED",
+            "REJECTED, REJECTED"
+        }
+    )
+    void validateTransitionsWhenReject(final OrderStatus status, final OrderStatus expected) {
         final OrderStatus actual = status.reject();
-        assertThat(actual).isEqualTo(OrderStatus.REJECTED);
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @Test
-    void whenConfirmedHasConfirmedThenReturnConfirmed() {
-        final OrderStatus status = OrderStatus.CONFIRMED;
-        final OrderStatus actual = status.confirm();
-        assertThat(actual).isEqualTo(OrderStatus.CONFIRMED);
-    }
-
-    @Test
-    void whenConfirmedHasRejectedThenReturnConfirmed() {
-        final OrderStatus status = OrderStatus.CONFIRMED;
-        final OrderStatus actual = status.reject();
-        assertThat(actual).isEqualTo(OrderStatus.CONFIRMED);
-    }
-
-    @Test
-    void whenRejectedHasConfirmedThenReturnRejected() {
-        final OrderStatus status = OrderStatus.REJECTED;
-        final OrderStatus actual = status.confirm();
-        assertThat(actual).isEqualTo(OrderStatus.REJECTED);
-    }
-
-    @Test
-    void whenRejectedHasRejectedThenReturnRejected() {
-        final OrderStatus status = OrderStatus.REJECTED;
-        final OrderStatus actual = status.reject();
-        assertThat(actual).isEqualTo(OrderStatus.REJECTED);
+    @ParameterizedTest
+    @CsvSource(
+        value = {
+            "CREATED, true",
+            "CONFIRMED, false",
+            "REJECTED, false"
+        }
+    )
+    void validateHasMoreTransitions(final OrderStatus status, final boolean expected) {
+        assertThat(status.hasMoreTransitions()).isEqualTo(expected);
     }
 
 }

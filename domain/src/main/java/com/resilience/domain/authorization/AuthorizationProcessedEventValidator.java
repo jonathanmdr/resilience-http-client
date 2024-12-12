@@ -5,6 +5,7 @@ import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.domain.validation.Validator;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public final class AuthorizationProcessedEventValidator extends Validator {
 
@@ -37,8 +38,8 @@ public final class AuthorizationProcessedEventValidator extends Validator {
         if (this.authorizationProcessedEvent.status() == null) {
             super.validationHandler().append(new Error("Authorization status must not be null"));
         }
-        if (this.authorizationProcessedEvent.occurredOn() == null) {
-            super.validationHandler().append(new Error("Occurred on must not be null"));
+        if (this.authorizationProcessedEvent.occurredOn() == null || this.authorizationProcessedEvent.occurredOn().isAfter(Instant.now())) {
+            super.validationHandler().append(new Error("Occurred on must not be null or in the future"));
         }
     }
 

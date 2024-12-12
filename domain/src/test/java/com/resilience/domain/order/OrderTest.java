@@ -7,12 +7,14 @@ import com.resilience.domain.validation.handler.NotificationHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class OrderTest {
@@ -66,6 +68,19 @@ class OrderTest {
             softly.assertThat(order.status()).isEqualTo(OrderStatus.REJECTED);
             softly.assertThat(order.events()).isEmpty();
         });
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        value = {
+            "CREATED, false",
+            "CONFIRMED, true",
+            "REJECTED, true"
+        }
+    )
+    void shouldBeValidateIsFinalizedOrder(final OrderStatus status, final boolean expected) {
+        final Order order = Order.with(OrderId.unique(), "1234", BigDecimal.TEN, status);
+        assertThat(order.isFinalized()).isEqualTo(expected);
     }
 
     @ParameterizedTest

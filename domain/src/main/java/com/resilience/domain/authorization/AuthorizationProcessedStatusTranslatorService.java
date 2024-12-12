@@ -19,7 +19,7 @@ public final class AuthorizationProcessedStatusTranslatorService implements Auth
         return switch (this.orderStatus) {
             case CONFIRMED -> AuthorizationStatus.APPROVED;
             case REJECTED -> AuthorizationStatus.REFUSED;
-            default -> AuthorizationStatus.PENDING;
+            case null, default -> AuthorizationStatus.PENDING;
         };
     }
 

@@ -12,9 +12,15 @@ class AuthorizationStatusTranslatorServiceTest {
         value = {
             "PENDING, PENDING",
             "ANOTHER, PENDING",
+            "null, PENDING",
+            "empty, PENDING",
             "APPROVED, APPROVED",
             "REFUSED, REFUSED"
-        }
+        },
+        nullValues = {
+            "null"
+        },
+        emptyValue = "empty"
     )
     void shouldTranslateAuthorizationStatusToOrderStatus(final String authorizationStatus, final AuthorizationStatus expected) {
         final AuthorizationStatusTranslatorService subject = AuthorizationStatusTranslatorService.create(authorizationStatus);
