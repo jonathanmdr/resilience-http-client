@@ -3,4 +3,4 @@
 ---
 
 ## Project Structure
-![example of structure](docs/example.png)
+![example of structure](.docs/example.png)

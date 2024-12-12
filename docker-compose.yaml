@@ -14,8 +14,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql-order-api-data:/bitnami/mysql/data
-      - ./migrations/ecommerce/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
-      - ./migrations/ecommerce/V0002_create-table-authorizations-processed-dlt.sql:/docker-entrypoint-initdb.d/V0002_create-table-authorizations-processed-dlt.sql
+      - .migrations/ecommerce/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
+      - .migrations/ecommerce/V0002_create-table-authorizations-processed-dlt.sql:/docker-entrypoint-initdb.d/V0002_create-table-authorizations-processed-dlt.sql
     networks:
       - ecommerce-network
     healthcheck:
@@ -38,7 +38,7 @@ services:
       - "3307:3306"
     volumes:
       - mysql-authorization-api-data:/bitnami/mysql/data
-      - ./migrations/authorizations/V0001_create-table-authorizations.sql:/docker-entrypoint-initdb.d/V0001_create-table-authorizations.sql
+      - .migrations/authorizations/V0001_create-table-authorizations.sql:/docker-entrypoint-initdb.d/V0001_create-table-authorizations.sql
     networks:
       - ecommerce-network
     healthcheck:
