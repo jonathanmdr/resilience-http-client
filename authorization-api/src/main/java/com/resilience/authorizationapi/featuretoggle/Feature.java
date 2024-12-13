@@ -2,7 +2,7 @@ package com.resilience.authorizationapi.featuretoggle;
 
 public enum Feature {
 
-    LATENCY(6000),
+    LATENCY(4000),
     UNAVAILABLE(503),
     TIMEOUT(504);
 

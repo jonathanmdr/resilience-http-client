@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 
 import javax.net.ssl.SSLException;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class AuthorizationClient extends WebClientTemplate {
@@ -41,8 +43,8 @@ public class AuthorizationClient extends WebClientTemplate {
                 .onErrorResume(WebClientResponseException.class, fallbackResponseException())
                 .blockOptional();
 
-            return authorization.map(Result::success)
-                .orElseGet(() -> Result.error(NotificationHandler.create(new Error("Authorization client failed with message: 'No response from authorization service'"))));
+            return authorization.map(resultAfterResponseValidation())
+                .orElseGet(clientIntegrationError());
         } catch (final Exception ex) {
             log.error("Authorization client failed with message: '{}'", ex.getMessage(), ex);
             final Error error = new Error("Authorization client failed with message: '%s'".formatted(ex.getMessage()));
@@ -50,7 +52,22 @@ public class AuthorizationClient extends WebClientTemplate {
         }
     }
 
-    private Result<AuthorizationResponse, ValidationHandler> authorizeFallback(final Throwable throwable) {
+    private static Function<AuthorizationResponse, Result<AuthorizationResponse, ValidationHandler>> resultAfterResponseValidation() {
+        return authorizationResponse -> {
+            final ValidationHandler handler = NotificationHandler.create();
+            authorizationResponse.validate(handler);
+            return handler.hasErrors() ? Result.error(handler) : Result.success(authorizationResponse);
+        };
+    }
+
+    private static Supplier<Result<AuthorizationResponse, ValidationHandler>> clientIntegrationError() {
+        return () -> {
+            final Error error = new Error("Authorization client failed with message: 'No response from authorization service'");
+            return Result.error(NotificationHandler.create(error));
+        };
+    }
+
+    private static Result<AuthorizationResponse, ValidationHandler> authorizeFallback(final Throwable throwable) {
         final Error error = new Error("Authorization client failed with message: '%s'".formatted(throwable.getMessage()));
         return Result.error(NotificationHandler.create(error));
     }
