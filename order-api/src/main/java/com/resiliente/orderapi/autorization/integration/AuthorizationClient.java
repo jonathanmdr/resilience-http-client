@@ -7,6 +7,7 @@ import com.resilience.domain.validation.handler.NotificationHandler;
 import com.resiliente.orderapi.autorization.integration.AuthorizationClientConfiguration.AuthorizationClientProperties;
 import com.resiliente.orderapi.integration.http.BaseClientProperties;
 import com.resiliente.orderapi.integration.http.WebClientTemplate;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import javax.net.ssl.SSLException;
+import java.util.Optional;
 
 @Component
 public class AuthorizationClient extends WebClientTemplate {
@@ -25,10 +27,11 @@ public class AuthorizationClient extends WebClientTemplate {
         super(properties);
     }
 
+    @Bulkhead(name = "authorizationBulkhead", fallbackMethod = "authorizeFallback")
     @CircuitBreaker(name = "authorizationCircuitBreaker", fallbackMethod = "authorizeFallback")
     public Result<AuthorizationResponse, ValidationHandler> authorize(final AuthorizationRequest request) {
         try {
-            final AuthorizationResponse authorization = this.webClient.post()
+            final Optional<AuthorizationResponse> authorization = this.webClient.post()
                 .uri("/v1/authorizations")
                 .body(Mono.just(request), AuthorizationRequest.class)
                 .retrieve()
@@ -36,9 +39,10 @@ public class AuthorizationClient extends WebClientTemplate {
                 .timeout(timeoutInSeconds())
                 .retryWhen(retryBackoffSpec())
                 .onErrorResume(WebClientResponseException.class, fallbackResponseException())
-                .block();
+                .blockOptional();
 
-            return Result.success(authorization);
+            return authorization.map(Result::success)
+                .orElseGet(() -> Result.error(NotificationHandler.create(new Error("Authorization client failed with message: 'No response from authorization service'"))));
         } catch (final Exception ex) {
             log.error("Authorization client failed with message: '{}'", ex.getMessage(), ex);
             final Error error = new Error("Authorization client failed with message: '%s'".formatted(ex.getMessage()));

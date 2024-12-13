@@ -36,6 +36,14 @@ resilience4j:
             authorizationCircuitBreaker:
                 base-config: default
 
+# BULKHEAD CONFIGURATION
+    bulkhead:
+        instances:
+            authorizationBulkhead:
+                registerHealthIndicator: true
+                maxConcurrentCalls: 1
+                maxWaitDuration: 1ms
+
 # RATE LIMITER CONFIGURATION
     ratelimiter:
         instances:
