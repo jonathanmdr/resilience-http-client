@@ -28,4 +28,43 @@ class ThrowableHandlerTest {
          assertThat(handler.lastError()).isEmpty();
      }
 
+    @Test
+    void shouldBeValidateWithDomainAndThrowsDomainException() {
+        final ValidationHandler handler = ThrowableHandler.create();
+        final StubValidation stubValidation = new StubValidation(StubValidation.ExceptionType.DOMAIN);
+
+        assertThatThrownBy(() -> handler.validate(stubValidation))
+            .isInstanceOf(DomainException.class)
+            .hasMessage("domain error");
+    }
+
+    @Test
+    void shouldBeValidateWithRuntimeAndThrowsDomainException() {
+        final ValidationHandler handler = ThrowableHandler.create();
+        final StubValidation stubValidation = new StubValidation(StubValidation.ExceptionType.RUNTIME);
+
+        assertThatThrownBy(() -> handler.validate(stubValidation))
+            .isInstanceOf(DomainException.class)
+            .hasMessage("runtime error");
+    }
+
+    private record StubValidation(
+        ExceptionType type
+    ) implements ValidationHandler.Validation {
+
+        @Override
+        public void validate(final ValidationHandler handler) {
+            switch (type) {
+                case DOMAIN -> throw DomainException.with(new Error("domain error"));
+                case RUNTIME -> throw new RuntimeException("runtime error");
+            }
+        }
+
+        private enum ExceptionType {
+            DOMAIN,
+            RUNTIME
+        }
+
+    }
+
 }
