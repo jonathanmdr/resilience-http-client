@@ -9,6 +9,7 @@ import com.resilience.domain.common.Result;
 import com.resilience.domain.order.Order;
 import com.resilience.domain.order.OrderGateway;
 import com.resilience.domain.order.OrderId;
+import com.resilience.domain.order.OrderStatus;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class UpdateOrderUseCaseTest extends MockSupportTest {
         final var amount = BigDecimal.TEN;
         final var order = Order.create(customerId, amount);
         final var pendingAuthorization = Authorization.create(order.id().value(), order.customerId(), order.amount());
-        final var approvedAuthorization = pendingAuthorization.authorize(AuthorizationStatusTranslatorService.create("APPROVE"));
+        final var approvedAuthorization = pendingAuthorization.authorize(AuthorizationStatusTranslatorService.create("APPROVED"));
 
         when(this.orderGateway.findById(order.id())).thenReturn(Optional.of(order));
         when(this.authorizationGateway.process(any(Authorization.class))).thenReturn(approvedAuthorization);
@@ -85,6 +86,33 @@ class UpdateOrderUseCaseTest extends MockSupportTest {
             });
             return true;
         }));
+    }
+
+    @Test
+    void shouldBeReturnPreviousApprovedAuthorization() {
+        final var customerId = UUID.randomUUID().toString();
+        final var amount = BigDecimal.TEN;
+        final var order = Order.with(OrderId.unique(), customerId, amount, OrderStatus.CONFIRMED);
+        final var pendingAuthorization = Authorization.create(order.id().value(), order.customerId(), order.amount());
+        final var approvedAuthorization = pendingAuthorization.authorize(AuthorizationStatusTranslatorService.create("APPROVED"));
+
+        when(this.orderGateway.findById(order.id())).thenReturn(Optional.of(order));
+
+        final AuthorizeOrderInput input = AuthorizeOrderInput.with(order.id().value());
+        final Result<AuthorizeOrderOutput, ValidationHandler> result = this.subject.execute(input);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result).isNotNull();
+            softly.assertThat(result.hasSuccess()).isTrue();
+            softly.assertThat(result.success())
+                .isNotNull()
+                .satisfies(output -> {
+                    softly.assertThat(output.authorizationId()).isNotBlank();
+                    softly.assertThat(output.status()).isEqualTo(approvedAuthorization.status().name());
+                });
+        });
+        verify(this.orderGateway).findById(order.id());
+        verify(this.authorizationGateway, never()).process(any(Authorization.class));
     }
 
     @Test

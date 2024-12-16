@@ -2,7 +2,7 @@ package com.resilience.domain.exception;
 
 import com.resilience.domain.validation.Error;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DomainException extends NoStacktraceException {
@@ -11,12 +11,12 @@ public class DomainException extends NoStacktraceException {
 
     private DomainException(final String message) {
         super(message);
-        this.errors = new ArrayList<>();
+        this.errors = Collections.emptyList();
     }
 
     private DomainException(final String message, final List<Error> errors) {
         super(message);
-        this.errors = errors != null ? errors : new ArrayList<>();
+        this.errors = errors != null ? errors : Collections.emptyList();
     }
 
     public static DomainException with(final Error error) {
