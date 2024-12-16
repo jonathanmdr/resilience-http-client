@@ -1,6 +1,7 @@
 package com.resilience.orderapi.authorization.integration;
 
 import com.resilience.domain.common.Result;
+import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.orderapi.WebClientIntegrationTest;
 import com.resiliente.orderapi.autorization.integration.AuthorizationClient;
@@ -18,7 +19,11 @@ import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -190,6 +195,65 @@ class AuthorizationClientIntegrationTest {
             });
 
         verify(21, postRequestedFor(urlEqualTo("/v1/authorizations"))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
+            .withRequestBody(matchingJsonPath("$.order_id", equalTo("4321")))
+            .withRequestBody(matchingJsonPath("$.customer_id", equalTo("5678")))
+            .withRequestBody(matchingJsonPath("$.order_amount", equalTo("199.99")))
+        );
+    }
+
+    @Test
+    void givenManyConcurrentAndParallelRequestsThenBulkheadShouldPermitOne() {
+        final AuthorizationResponse response = AuthorizationResponse.with("APPROVED");
+        stubFor(post(urlEqualTo("/v1/authorizations"))
+            .willReturn(aResponse()
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(Json.writeValueAsString(response))
+            )
+        );
+        final AuthorizationRequest request = AuthorizationRequest.with("1234", "4321", "5678", BigDecimal.valueOf(199.99));
+        final CompletableFuture<Result<AuthorizationResponse, ValidationHandler>> futureOne = CompletableFuture.supplyAsync(() -> this.subject.authorize(request));
+        final CompletableFuture<Result<AuthorizationResponse, ValidationHandler>> futureTwo = CompletableFuture.supplyAsync(() -> this.subject.authorize(request));
+        final CompletableFuture<List<Result<AuthorizationResponse, ValidationHandler>>> futures = CompletableFuture.allOf(futureOne, futureTwo)
+            .thenApply(voidable -> Stream.of(futureOne, futureTwo)
+                .map(CompletableFuture::join)
+                .toList()
+            );
+
+        final List<Result<AuthorizationResponse, ValidationHandler>> results = futures.join();
+
+        assertThat(results.getFirst())
+            .satisfies(result -> {
+                if (result.hasSuccess()) {
+                    assertThat(result.success())
+                        .isNotNull()
+                        .isEqualTo(response);
+                } else {
+                    assertThat(result.error())
+                        .isNotNull()
+                        .extracting(ValidationHandler::firstError)
+                        .extracting(Optional::get)
+                        .isEqualTo(new Error("Authorization client failed with message: 'Bulkhead 'authorizationBulkhead' is full and does not permit further calls'"));
+                }
+            });
+        assertThat(results.getLast())
+            .satisfies(result -> {
+                if (result.hasSuccess()) {
+                    assertThat(result.success())
+                        .isNotNull()
+                        .isEqualTo(response);
+                } else {
+                    assertThat(result.error())
+                        .isNotNull()
+                        .extracting(ValidationHandler::firstError)
+                        .extracting(Optional::get)
+                        .isEqualTo(new Error("Authorization client failed with message: 'Bulkhead 'authorizationBulkhead' is full and does not permit further calls'"));
+                }
+            });
+        verify(1, postRequestedFor(urlEqualTo("/v1/authorizations"))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
