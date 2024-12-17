@@ -49,7 +49,7 @@ resilience4j:
         instances:
             getOrderByIdRateLimiter:
                 registerHealthIndicator: true
-                limitForPeriod: 2
+                limitForPeriod: 1
                 limitRefreshPeriod: 5s
                 timeoutDuration: 1ms
 

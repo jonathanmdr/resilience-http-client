@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Inherited
 @ActiveProfiles("integration-test")
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @ExtendWith(
     value = {
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
     }
 )
 @ContextConfiguration(classes = OrderApi.class)
-public @interface IntegrationTest {
+public @interface WebIntegrationTest {
 
     @AliasFor(annotation = SpringBootTest.class, attribute = "classes")
     Class<?>[] classes() default {};
