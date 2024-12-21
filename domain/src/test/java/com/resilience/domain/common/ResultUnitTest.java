@@ -62,7 +62,7 @@ class ResultUnitTest {
     @Test
     void givenAnErrorResponse_whenCallsError_shouldReturnErrorData() {
         final var handler = NotificationHandler.create();
-        handler.append(new Error("error"));
+        handler.append(Error.of("error"));
         final var clientResponse = Result.error(handler);
         final var actual = clientResponse.error();
         assertThat(actual)

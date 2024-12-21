@@ -10,4 +10,8 @@ public record Error(String message) {
         }
     }
 
+    public static Error of(final String message) {
+        return new Error(message);
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.resilience.orderapi.authorization.models;
 
 import com.resilience.orderapi.JacksonIntegrationTest;
-import com.resiliente.orderapi.autorization.models.AuthorizeOrderResponse;
+import com.resilience.orderapi.autorization.models.AuthorizeOrderResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;

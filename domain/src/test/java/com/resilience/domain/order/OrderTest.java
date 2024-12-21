@@ -97,11 +97,11 @@ class OrderTest {
 
     private static Stream<Arguments> provideInvalidOrderToValidate() {
         return Stream.of(
-            Arguments.of(Order.create(null, BigDecimal.TEN), new Error("Customer id must not be null or blank")),
-            Arguments.of(Order.create(" ", BigDecimal.TEN), new Error("Customer id must not be null or blank")),
-            Arguments.of(Order.create("1234", null), new Error("Amount must be greater than zero")),
-            Arguments.of(Order.create("1234", BigDecimal.ZERO), new Error("Amount must be greater than zero")),
-            Arguments.of(Order.create("1234", BigDecimal.valueOf(-1)), new Error("Amount must be greater than zero"))
+            Arguments.of(Order.create(null, BigDecimal.TEN), Error.of("Customer id must not be null or blank")),
+            Arguments.of(Order.create(" ", BigDecimal.TEN), Error.of("Customer id must not be null or blank")),
+            Arguments.of(Order.create("1234", null), Error.of("Amount must be greater than zero")),
+            Arguments.of(Order.create("1234", BigDecimal.ZERO), Error.of("Amount must be greater than zero")),
+            Arguments.of(Order.create("1234", BigDecimal.valueOf(-1)), Error.of("Amount must be greater than zero"))
         );
     }
 

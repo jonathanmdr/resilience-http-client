@@ -2,9 +2,8 @@ package com.resilience.orderapi.order.presenter;
 
 import com.resilience.application.order.create.CreateOrderOutput;
 import com.resilience.application.order.get.GetOrderByIdOutput;
-import com.resiliente.orderapi.order.models.CreateOrderResponse;
-import com.resiliente.orderapi.order.models.GetOrderByIdResponse;
-import com.resiliente.orderapi.order.presenter.OrderPresenter;
+import com.resilience.orderapi.order.models.CreateOrderResponse;
+import com.resilience.orderapi.order.models.GetOrderByIdResponse;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

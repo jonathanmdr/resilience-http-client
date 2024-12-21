@@ -27,19 +27,19 @@ public final class AuthorizationProcessedEventValidator extends Validator {
 
     private void checkAuthorizationProcessedEventConstraints() {
         if (this.authorizationProcessedEvent.authorizationId() == null || this.authorizationProcessedEvent.authorizationId().isBlank()) {
-            super.validationHandler().append(new Error("Authorization id must not be null or blank"));
+            super.validationHandler().append(Error.of("Authorization id must not be null or blank"));
         }
         if (this.authorizationProcessedEvent.orderId() == null || this.authorizationProcessedEvent.orderId().isBlank()) {
-            super.validationHandler().append(new Error("Order id must not be null or blank"));
+            super.validationHandler().append(Error.of("Order id must not be null or blank"));
         }
         if (this.authorizationProcessedEvent.orderAmount() == null || this.authorizationProcessedEvent.orderAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            super.validationHandler().append(new Error("Order amount must be greater than zero"));
+            super.validationHandler().append(Error.of("Order amount must be greater than zero"));
         }
         if (this.authorizationProcessedEvent.status() == null) {
-            super.validationHandler().append(new Error("Authorization status must not be null"));
+            super.validationHandler().append(Error.of("Authorization status must not be null"));
         }
         if (this.authorizationProcessedEvent.occurredOn() == null || this.authorizationProcessedEvent.occurredOn().isAfter(Instant.now())) {
-            super.validationHandler().append(new Error("Occurred on must not be null or in the future"));
+            super.validationHandler().append(Error.of("Occurred on must not be null or in the future"));
         }
     }
 

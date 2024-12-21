@@ -4,13 +4,14 @@ import com.resilience.domain.common.Result;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.orderapi.WebClientIntegrationTest;
-import com.resiliente.orderapi.autorization.integration.AuthorizationClient;
-import com.resiliente.orderapi.autorization.integration.AuthorizationClientConfiguration;
-import com.resiliente.orderapi.autorization.integration.AuthorizationRequest;
-import com.resiliente.orderapi.autorization.integration.AuthorizationResponse;
-import com.resiliente.orderapi.configuration.Json;
+import com.resilience.orderapi.autorization.integration.AuthorizationClient;
+import com.resilience.orderapi.autorization.integration.AuthorizationClientConfiguration;
+import com.resilience.orderapi.autorization.integration.AuthorizationRequest;
+import com.resilience.orderapi.autorization.integration.AuthorizationResponse;
+import com.resilience.orderapi.configuration.Json;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -190,11 +191,20 @@ class AuthorizationClientIntegrationTest {
             .pollInterval(Duration.ofSeconds(1))
             .until(() -> {
                 this.subject.authorize(request);
+                assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.HALF_OPEN);
+                return true;
+            });
+
+        await()
+            .atMost(Duration.ofSeconds(2))
+            .pollInterval(Duration.ofSeconds(1))
+            .until(() -> {
+                this.subject.authorize(request);
                 assertThat(circuitBreaker.getState()).isEqualTo(CircuitBreaker.State.CLOSED);
                 return true;
             });
 
-        verify(21, postRequestedFor(urlEqualTo("/v1/authorizations"))
+        verify(22, postRequestedFor(urlEqualTo("/v1/authorizations"))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withRequestBody(matchingJsonPath("$.authorization_id", equalTo("1234")))
@@ -226,33 +236,10 @@ class AuthorizationClientIntegrationTest {
         final List<Result<AuthorizationResponse, ValidationHandler>> results = futures.join();
 
         assertThat(results.getFirst())
-            .satisfies(result -> {
-                if (result.hasSuccess()) {
-                    assertThat(result.success())
-                        .isNotNull()
-                        .isEqualTo(response);
-                } else {
-                    assertThat(result.error())
-                        .isNotNull()
-                        .extracting(ValidationHandler::firstError)
-                        .extracting(Optional::get)
-                        .isEqualTo(new Error("Authorization client failed with message: 'Bulkhead 'authorizationBulkhead' is full and does not permit further calls'"));
-                }
-            });
+            .satisfies(validateResultBy(response));
         assertThat(results.getLast())
-            .satisfies(result -> {
-                if (result.hasSuccess()) {
-                    assertThat(result.success())
-                        .isNotNull()
-                        .isEqualTo(response);
-                } else {
-                    assertThat(result.error())
-                        .isNotNull()
-                        .extracting(ValidationHandler::firstError)
-                        .extracting(Optional::get)
-                        .isEqualTo(new Error("Authorization client failed with message: 'Bulkhead 'authorizationBulkhead' is full and does not permit further calls'"));
-                }
-            });
+            .satisfies(validateResultBy(response));
+
         verify(1, postRequestedFor(urlEqualTo("/v1/authorizations"))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.ACCEPT, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -261,6 +248,22 @@ class AuthorizationClientIntegrationTest {
             .withRequestBody(matchingJsonPath("$.customer_id", equalTo("5678")))
             .withRequestBody(matchingJsonPath("$.order_amount", equalTo("199.99")))
         );
+    }
+
+    private static ThrowingConsumer<Result<AuthorizationResponse, ValidationHandler>> validateResultBy(final AuthorizationResponse response) {
+        return result -> {
+            if (result.hasSuccess()) {
+                assertThat(result.success())
+                    .isNotNull()
+                    .isEqualTo(response);
+            } else {
+                assertThat(result.error())
+                    .isNotNull()
+                    .extracting(ValidationHandler::firstError)
+                    .extracting(Optional::get)
+                    .isEqualTo(new Error("Authorization client failed with message: 'Bulkhead 'authorizationBulkhead' is full and does not permit further calls'"));
+            }
+        };
     }
 
 }

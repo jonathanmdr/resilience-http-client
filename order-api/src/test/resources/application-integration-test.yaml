@@ -27,7 +27,7 @@ resilience4j:
                 failureRateThreshold: 50
                 slowCallRateThreshold: 50
                 slowCallDurationThreshold: 2s
-                permittedNumberOfCallsInHalfOpenState: 1
+                permittedNumberOfCallsInHalfOpenState: 2
                 slidingWindowType: COUNT_BASED
                 slidingWindowSize: 5
                 minimumNumberOfCalls: 5

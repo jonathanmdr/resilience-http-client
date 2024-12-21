@@ -1,6 +1,5 @@
 package com.resilience.orderapi;
 
-import com.resiliente.orderapi.OrderApi;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,11 +19,7 @@ import java.lang.annotation.Target;
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration-test")
 @ExtendWith(CleanupDatabaseExtension.class)
-@ContextConfiguration(
-    classes = {
-        OrderApi.class
-    }
-)
+@ContextConfiguration(classes = OrderApi.class)
 public @interface DatabaseRepositoryIntegrationTest {
 
 }

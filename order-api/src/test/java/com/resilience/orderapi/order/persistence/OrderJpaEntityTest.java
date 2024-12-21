@@ -2,7 +2,6 @@ package com.resilience.orderapi.order.persistence;
 
 import com.resilience.domain.order.Order;
 import com.resilience.domain.order.OrderStatus;
-import com.resiliente.orderapi.order.persistence.OrderJpaEntity;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

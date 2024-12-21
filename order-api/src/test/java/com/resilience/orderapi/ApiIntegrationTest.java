@@ -1,7 +1,6 @@
 package com.resilience.orderapi;
 
-import com.resiliente.orderapi.OrderApi;
-import com.resiliente.orderapi.configuration.ObjectMapperConfiguration;
+import com.resilience.orderapi.configuration.ObjectMapperConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;

@@ -2,8 +2,6 @@ package com.resilience.orderapi.order.persistence;
 
 import com.resilience.domain.order.Order;
 import com.resilience.orderapi.DatabaseRepositoryIntegrationTest;
-import com.resiliente.orderapi.order.persistence.OrderJpaEntity;
-import com.resiliente.orderapi.order.persistence.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,7 +39,7 @@ class OrderRepositoryIntegrationTest {
 
         assertThatThrownBy(() -> this.orderRepository.saveAndFlush(entity))
             .isExactlyInstanceOf(JpaSystemException.class)
-            .hasMessage("Identifier of entity 'com.resiliente.orderapi.order.persistence.OrderJpaEntity' must be manually assigned before calling 'persist()'");
+            .hasMessage("Identifier of entity 'com.resilience.orderapi.order.persistence.OrderJpaEntity' must be manually assigned before calling 'persist()'");
     }
 
     @Test

@@ -1,8 +1,8 @@
 package com.resilience.orderapi.authorization.presenter;
 
 import com.resilience.application.authorization.authorize.AuthorizeOrderOutput;
-import com.resiliente.orderapi.autorization.models.AuthorizeOrderResponse;
-import com.resiliente.orderapi.autorization.presenter.AuthorizationPresenter;
+import com.resilience.orderapi.autorization.models.AuthorizeOrderResponse;
+import com.resilience.orderapi.autorization.presenter.AuthorizationPresenter;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;

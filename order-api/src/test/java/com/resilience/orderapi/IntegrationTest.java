@@ -1,6 +1,5 @@
 package com.resilience.orderapi;
 
-import com.resiliente.orderapi.OrderApi;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AliasFor;
@@ -17,14 +16,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("integration-test")
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
-)
-@ExtendWith(
-    value = {
-        CleanupDatabaseExtension.class
-    }
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ExtendWith(CleanupDatabaseExtension.class)
 @ContextConfiguration(classes = OrderApi.class)
 public @interface IntegrationTest {
 

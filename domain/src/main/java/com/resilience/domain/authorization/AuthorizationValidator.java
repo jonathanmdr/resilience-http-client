@@ -26,16 +26,16 @@ public final class AuthorizationValidator extends Validator {
 
     private void checkAuthorizationConstraints() {
         if (this.authorization.orderId() == null || this.authorization.orderId().isBlank()) {
-            super.validationHandler().append(new Error("Order id must not be null or blank"));
+            super.validationHandler().append(Error.of("Order id must not be null or blank"));
         }
         if (this.authorization.customerId() == null || this.authorization.customerId().isBlank()) {
-            super.validationHandler().append(new Error("Customer id must not be null or blank"));
+            super.validationHandler().append(Error.of("Customer id must not be null or blank"));
         }
         if (this.authorization.orderAmount() == null || this.authorization.orderAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            super.validationHandler().append(new Error("Order amount must be greater than zero"));
+            super.validationHandler().append(Error.of("Order amount must be greater than zero"));
         }
         if (this.authorization.status() == null) {
-            super.validationHandler().append(new Error("Authorization status cannot be null"));
+            super.validationHandler().append(Error.of("Authorization status cannot be null"));
         }
     }
 

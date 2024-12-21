@@ -14,6 +14,21 @@ spring:
         properties:
             "[hibernate.format_sql]": true
 
+# SPRING CLOUD CONFIGURATION
+    cloud:
+        stream:
+            binders:
+                ecommerce:
+                    environment:
+                        spring:
+                            cloud:
+                                stream:
+                                    kafka:
+                                        binder:
+                                            configuration:
+                                                security:
+                                                    protocol: PLAINTEXT
+
 # LOGGING CONFIGURATION
 logging:
     appender: CONSOLE

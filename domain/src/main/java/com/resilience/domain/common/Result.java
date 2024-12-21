@@ -24,7 +24,7 @@ public final class Result<S, E extends ValidationHandler> {
 
     public S success() {
         if (hasError()) {
-            throw DomainException.with(new Error("The 'success' object cannot be invoked when an 'error' object exists"));
+            throw DomainException.with(Error.of("The 'success' object cannot be invoked when an 'error' object exists"));
         }
 
         return this.success;
@@ -32,7 +32,7 @@ public final class Result<S, E extends ValidationHandler> {
 
     public E error() {
         if (hasSuccess()) {
-            throw DomainException.with(new Error("The 'error' object cannot be invoked when an 'success' object exists"));
+            throw DomainException.with(Error.of("The 'error' object cannot be invoked when an 'success' object exists"));
         }
 
         return this.error;

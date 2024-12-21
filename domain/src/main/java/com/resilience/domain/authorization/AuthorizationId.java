@@ -18,7 +18,7 @@ public final class AuthorizationId extends Identifier {
 
     public static AuthorizationId unique(final String reference) {
         if (reference == null || reference.isBlank()) {
-            throw DomainException.with(new Error("Reference cannot be null or empty"));
+            throw DomainException.with(Error.of("Reference cannot be null or empty"));
         }
 
         final UUID uuid = UUID.nameUUIDFromBytes(reference.getBytes(StandardCharsets.UTF_8));

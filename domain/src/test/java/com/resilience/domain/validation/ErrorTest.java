@@ -9,14 +9,14 @@ class ErrorTest {
 
     @Test
     void shouldThrowNoStacktraceExceptionWhenMessageIsNull() {
-        assertThatThrownBy(() -> new Error(null))
+        assertThatThrownBy(() -> Error.of(null))
             .isInstanceOf(NoStacktraceException.class)
             .hasMessage("Error message must be provided");
     }
 
     @Test
     void shouldThrowNoStacktraceExceptionWhenMessageIsBlank() {
-        assertThatThrownBy(() -> new Error(" "))
+        assertThatThrownBy(() -> Error.of(" "))
             .isInstanceOf(NoStacktraceException.class)
             .hasMessage("Error message must be provided");
     }

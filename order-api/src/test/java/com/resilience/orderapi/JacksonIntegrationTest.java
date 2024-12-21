@@ -1,7 +1,6 @@
 package com.resilience.orderapi;
 
-import com.resiliente.orderapi.OrderApi;
-import com.resiliente.orderapi.configuration.ObjectMapperConfiguration;
+import com.resilience.orderapi.configuration.ObjectMapperConfiguration;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -26,11 +25,7 @@ import java.lang.annotation.Target;
         )
     }
 )
-@ContextConfiguration(
-    classes = {
-        OrderApi.class
-    }
-)
+@ContextConfiguration(classes = OrderApi.class)
 public @interface JacksonIntegrationTest {
 
 }

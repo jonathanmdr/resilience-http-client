@@ -26,10 +26,10 @@ public final class OrderValidator extends Validator {
 
     private void checkOrderConstraints() {
         if (this.order.customerId() == null || this.order.customerId().isBlank()) {
-            super.validationHandler().append(new Error("Customer id must not be null or blank"));
+            super.validationHandler().append(Error.of("Customer id must not be null or blank"));
         }
         if (this.order.amount() == null || this.order.amount().compareTo(BigDecimal.ZERO) <= 0) {
-            super.validationHandler().append(new Error("Amount must be greater than zero"));
+            super.validationHandler().append(Error.of("Amount must be greater than zero"));
         }
     }
 

@@ -24,7 +24,7 @@ public final class NotificationHandler implements ValidationHandler {
     }
 
     public static NotificationHandler create(final Throwable throwable) {
-        return create().append(new Error(throwable.getMessage()));
+        return create().append(Error.of(throwable.getMessage()));
     }
 
     @Override
@@ -40,7 +40,7 @@ public final class NotificationHandler implements ValidationHandler {
         } catch (final DomainException ex) {
             this.errors.addAll(ex.errors());
         } catch (final Exception ex) {
-            this.errors.add(new Error(ex.getMessage()));
+            this.errors.add(Error.of(ex.getMessage()));
         }
     }
 

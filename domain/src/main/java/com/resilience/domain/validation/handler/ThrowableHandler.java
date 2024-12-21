@@ -22,7 +22,7 @@ public final class ThrowableHandler implements ValidationHandler {
         try {
             validation.validate(this);
         } catch (final Exception ex) {
-            throw DomainException.with(new Error(ex.getMessage()));
+            throw DomainException.with(Error.of(ex.getMessage()));
         }
     }
 

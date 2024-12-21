@@ -17,7 +17,7 @@ class ThrowableHandlerTest {
 
      @Test
      void shouldThrowDomainExceptionWhenAppendError() {
-         final Error error = new Error("error");
+         final Error error = Error.of("error");
          final ValidationHandler handler = ThrowableHandler.create();
 
          assertThatThrownBy(() -> handler.append(error))
@@ -55,7 +55,7 @@ class ThrowableHandlerTest {
         @Override
         public void validate(final ValidationHandler handler) {
             switch (type) {
-                case DOMAIN -> throw DomainException.with(new Error("domain error"));
+                case DOMAIN -> throw DomainException.with(Error.of("domain error"));
                 case RUNTIME -> throw new RuntimeException("runtime error");
             }
         }

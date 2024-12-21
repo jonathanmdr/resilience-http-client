@@ -23,7 +23,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldBeInstantiateHandlerWithOneError() {
-        final Error error = new Error("error");
+        final Error error = Error.of("error");
 
         final ValidationHandler handler = NotificationHandler.create(error);
 
@@ -35,7 +35,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldBeInstantiateHandlerWithOneThrowable() {
-        final Error error = new Error("error");
+        final Error error = Error.of("error");
         final Throwable throwable = new Throwable("error");
 
         final ValidationHandler handler = NotificationHandler.create(throwable);
@@ -48,8 +48,8 @@ class NotificationHandlerTest {
 
     @Test
     void shouldBeAppendError() {
-        final Error errorOne = new Error("error one");
-        final Error errorTwo = new Error("error two");
+        final Error errorOne = Error.of("error one");
+        final Error errorTwo = Error.of("error two");
         final ValidationHandler handler = NotificationHandler.create();
 
         handler.append(errorOne);
@@ -63,7 +63,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldBeValidateStubValidationRuntimeException() {
-        final Error error = new Error("runtime error");
+        final Error error = Error.of("runtime error");
         final ValidationHandler handler = NotificationHandler.create();
         final StubValidation stubValidation = new StubValidation(StubValidation.ExceptionType.RUNTIME);
 
@@ -77,7 +77,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldBeValidateStubValidationDomainException() {
-        final Error error = new Error("domain error");
+        final Error error = Error.of("domain error");
         final ValidationHandler handler = NotificationHandler.create();
         final StubValidation stubValidation = new StubValidation(StubValidation.ExceptionType.DOMAIN);
 
@@ -96,7 +96,7 @@ class NotificationHandlerTest {
         @Override
         public void validate(final ValidationHandler handler) {
             switch (type) {
-                case DOMAIN -> throw DomainException.with("domain error", List.of(new Error("domain error")));
+                case DOMAIN -> throw DomainException.with("domain error", List.of(Error.of("domain error")));
                 case RUNTIME -> throw new RuntimeException("runtime error");
             }
         }

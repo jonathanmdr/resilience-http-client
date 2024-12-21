@@ -1,6 +1,5 @@
 package com.resilience.orderapi;
 
-import com.resiliente.orderapi.OrderApi;
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerAutoConfiguration;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
