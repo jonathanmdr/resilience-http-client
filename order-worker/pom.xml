@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- DEPENDENCIES -->
-        <spring-boot-dependencies.version>3.4.0</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.4.1</spring-boot-dependencies.version>
         <spring-cloud-dependencies.version>2024.0.0</spring-cloud-dependencies.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <jackson-databind.version>2.18.2</jackson-databind.version>
