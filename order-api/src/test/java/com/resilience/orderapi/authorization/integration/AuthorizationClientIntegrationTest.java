@@ -3,7 +3,7 @@ package com.resilience.orderapi.authorization.integration;
 import com.resilience.domain.common.Result;
 import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
-import com.resilience.orderapi.WebClientIntegrationTest;
+import com.resilience.orderapi.HttpClientIntegrationTest;
 import com.resilience.orderapi.autorization.integration.AuthorizationClient;
 import com.resilience.orderapi.autorization.integration.AuthorizationClientConfiguration;
 import com.resilience.orderapi.autorization.integration.AuthorizationRequest;
@@ -37,8 +37,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-@WebClientIntegrationTest(
-    classes = {
+@HttpClientIntegrationTest(
+    components = {
         AuthorizationClient.class,
         AuthorizationClientConfiguration.class
     }

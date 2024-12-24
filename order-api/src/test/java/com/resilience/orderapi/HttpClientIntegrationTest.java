@@ -1,13 +1,14 @@
 package com.resilience.orderapi;
 
+import io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadAutoConfiguration;
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerAutoConfiguration;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -19,16 +20,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ActiveProfiles("integration-test")
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.NONE
+@RestClientTest
+@Import(
+    value = {
+        CircuitBreakerAutoConfiguration.class,
+        BulkheadAutoConfiguration.class
+    }
 )
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @AutoConfigureWireMock(port = 9090)
-@Import(CircuitBreakerAutoConfiguration.class)
 @ExtendWith(HttpClientExtension.class)
-@ContextConfiguration(classes = OrderApi.class)
-public @interface WebClientIntegrationTest {
+public @interface HttpClientIntegrationTest {
 
-    @AliasFor(annotation = SpringBootTest.class, attribute = "classes")
-    Class<?>[] classes() default {};
+    @AliasFor(annotation = RestClientTest.class, attribute = "components")
+    Class<?>[] components() default {};
 
 }

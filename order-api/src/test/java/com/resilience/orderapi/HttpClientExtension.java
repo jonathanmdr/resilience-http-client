@@ -14,7 +14,7 @@ public class HttpClientExtension implements BeforeEachCallback {
 
     @Override
     public void beforeEach(final ExtensionContext context) {
-        if (context.getRequiredTestClass().isAnnotationPresent(WebClientIntegrationTest.class)) {
+        if (context.getRequiredTestClass().isAnnotationPresent(HttpClientIntegrationTest.class)) {
             WireMock.reset();
         }
 

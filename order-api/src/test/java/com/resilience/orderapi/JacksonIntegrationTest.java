@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -25,7 +24,6 @@ import java.lang.annotation.Target;
         )
     }
 )
-@ContextConfiguration(classes = OrderApi.class)
 public @interface JacksonIntegrationTest {
 
 }
