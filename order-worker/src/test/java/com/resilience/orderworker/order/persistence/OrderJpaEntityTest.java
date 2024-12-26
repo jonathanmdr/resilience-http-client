@@ -47,7 +47,6 @@ class OrderJpaEntityTest {
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
             .doesNotHaveSameHashCodeAs(entityTwo);
-        entityOne.setId(order.id().value());
         entityOne.setId(null);
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
@@ -59,7 +58,6 @@ class OrderJpaEntityTest {
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
             .doesNotHaveSameHashCodeAs(entityTwo);
-        entityOne.setCustomerId(order.customerId());
         entityOne.setCustomerId(null);
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
@@ -71,7 +69,6 @@ class OrderJpaEntityTest {
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
             .doesNotHaveSameHashCodeAs(entityTwo);
-        entityOne.setAmount(order.amount());
         entityOne.setAmount(null);
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
@@ -83,7 +80,6 @@ class OrderJpaEntityTest {
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
             .doesNotHaveSameHashCodeAs(entityTwo);
-        entityOne.setStatus(order.status());
         entityOne.setStatus(null);
         assertThat(entityOne)
             .isNotEqualTo(entityTwo)
