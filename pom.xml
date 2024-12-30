@@ -84,7 +84,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
+                    <argLine>@{argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito-junit-jupiter.version}/mockito-core-${mockito-junit-jupiter.version}.jar</argLine>
+                    <argLine>@{argLine} -Xshare:off</argLine>
                 </configuration>
             </plugin>
             <plugin>

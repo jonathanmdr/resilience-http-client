@@ -1,5 +1,6 @@
 package com.resilience.authorizationapi.featuretoggle;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -8,9 +9,8 @@ public final class FeatureToggle {
     private static final Map<Feature, Boolean> features = new EnumMap<>(Feature.class);
 
     static {
-        disable(Feature.LATENCY);
-        disable(Feature.UNAVAILABLE);
-        disable(Feature.TIMEOUT);
+        Arrays.asList(Feature.values())
+            .forEach(FeatureToggle::disable);
     }
 
     private FeatureToggle() { }

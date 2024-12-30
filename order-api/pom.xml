@@ -225,7 +225,7 @@
                 <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>domain-prepare-agent</id>
+                        <id>order-api-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
