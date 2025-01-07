@@ -89,6 +89,86 @@ services:
     networks:
       - ecommerce-network
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    hostname: jaeger
+    restart: "no"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+      METRICS_STORAGE_TYPE: prometheus
+      PROMETHEUS_SERVER_URL: http://prometheus:9090
+    ports:
+      # Web Interface
+      - "16686:16686"
+    depends_on:
+      - prometheus
+    networks:
+      - ecommerce-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.68.0
+    container_name: otel-collector
+    hostname: otel-collector
+    restart: "no"
+    command:
+      - --config=/etc/otel-collector-config.yaml
+    ports:
+      # HTTP port
+      - "4317:4317"
+      # gRPC port
+      - "4318:4318"
+      # Otel collector metrics port
+      - "8888:8888"
+      # Span metrics port
+      - "9999:9999"
+    volumes:
+      - .otel-dev/otel-collector.yaml:/etc/otel-collector-config.yaml
+    depends_on:
+      - jaeger
+      - prometheus
+    networks:
+      - ecommerce-network
+
+  prometheus:
+    image: prom/prometheus:v2.41.0
+    container_name: prometheus
+    hostname: prometheus
+    restart: "no"
+    command:
+      - --web.console.templates=/etc/prometheus/consoles
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --storage.tsdb.retention.time=1h
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+      - --web.route-prefix=/
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+    ports:
+      - "9090:9090"
+    volumes:
+      - .otel-dev/prometheus.yaml:/etc/prometheus/prometheus.yml
+    networks:
+      - ecommerce-network
+
+  grafana:
+    image: grafana/grafana:9.3.2
+    container_name: grafana
+    hostname: grafana
+    restart: "no"
+    environment:
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_BASIC_ENABLED: false
+    ports:
+      - "3000:3000"
+    volumes:
+      - .otel-dev/ds-prometheus.yaml:/etc/grafana/provisioning/datasources/datasource.yml
+    depends_on:
+      - prometheus
+    networks:
+      - ecommerce-network
+
 networks:
   ecommerce-network:
     driver: bridge

@@ -101,4 +101,4 @@ logging:
         com.resilience: INFO
     appender: CONSOLE
     pattern:
-        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %X{X-Request-ID} %highlight(%-5level) %magenta([%t]) %msg%n"
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} TraceId: %X{trace_id} SpanId: %X{span_id} %highlight(%-5level) %magenta([%t]) %msg%n"

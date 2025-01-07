@@ -22,10 +22,10 @@
 
         <!-- DEPENDENCIES -->
         <spring-boot-dependencies.version>3.4.1</spring-boot-dependencies.version>
+        <open-telemetry.version>1.45.0</open-telemetry.version>
         <springdoc-openapi-starter-webmvc-ui.version>2.7.0</springdoc-openapi-starter-webmvc-ui.version>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-        <domain.version>0.0.1</domain.version>
 
         <!-- TEST DEPENDENCIES -->
         <awaitility.version>4.2.2</awaitility.version>
@@ -43,6 +43,13 @@
                 <artifactId>spring-boot-dependencies</artifactId>
                 <type>pom</type>
                 <version>${spring-boot-dependencies.version}</version>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${open-telemetry.version}</version>
+                <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
@@ -102,9 +109,17 @@
             <version>${logstash-logback-encoder.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.resilience.domain</groupId>
             <artifactId>domain</artifactId>
-            <version>${domain.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

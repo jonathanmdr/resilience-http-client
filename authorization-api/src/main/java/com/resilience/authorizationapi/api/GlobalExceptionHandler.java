@@ -1,14 +1,14 @@
 package com.resilience.authorizationapi.api;
 
-import com.resilience.authorizationapi.common.ValidationException;
 import com.resilience.domain.exception.DomainException;
-import com.resilience.domain.exception.NoStacktraceException;
 import com.resilience.domain.validation.Error;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,9 +36,12 @@ import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ApiError> handleUncaughtException(final Throwable throwable) {
         final var responseBody = ApiError.from("An unidentified error has occurred");
+        logError(throwable);
         return ResponseEntity.internalServerError()
             .body(responseBody);
     }
@@ -49,6 +52,7 @@ public class GlobalExceptionHandler {
             .map(ConstraintViolation::getMessage)
             .toList();
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), errors);
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -62,6 +66,7 @@ public class GlobalExceptionHandler {
             .map(toErrorFieldByField())
             .toList();
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), errors);
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -74,18 +79,7 @@ public class GlobalExceptionHandler {
             .map(toErrorFieldByField())
             .toList();
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), errors);
-        return ResponseEntity.badRequest()
-            .body(responseBody);
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ApiError> handleValidationException(final ValidationException exception) {
-        final var errors = exception.bindingResult()
-            .getAllErrors()
-            .stream()
-            .map(toErrorFieldByField())
-            .toList();
-        final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), errors);
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -93,6 +87,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ApiError> handleMissingRequestHeaderException(final MissingRequestHeaderException exception) {
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), List.of(exception.getMessage()));
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -100,16 +95,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiError> handleMissingServletRequestParameterException(final MissingServletRequestParameterException exception) {
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), List.of(exception.getMessage()));
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException exception) {
-        final var errors = List.of(
-            "The parameter '%s' doesn't accept the value '%s'".formatted(exception.getPropertyName(), exception.getValue())
-        );
+        final var errors = List.of("The parameter '%s' doesn't accept the value '%s'".formatted(exception.getPropertyName(), exception.getValue()));
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), errors);
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -117,6 +112,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiError> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException exception) {
         final var responseBody = ApiError.from(BAD_REQUEST.getReasonPhrase(), List.of(exception.getMessage()));
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
@@ -124,6 +120,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ApiError> handleHttpMediaTypeNotSupportedException(final HttpMediaTypeNotSupportedException exception) {
         final var responseBody = ApiError.from(UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(), List.of(exception.getMessage()));
+        logError(exception);
         return ResponseEntity.status(UNSUPPORTED_MEDIA_TYPE)
             .body(responseBody);
     }
@@ -131,25 +128,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleHttpMessageNotReadableException(final HttpMessageNotReadableException exception) {
         final var responseBody = ApiError.from("Required request body is missing or invalid");
+        logError(exception);
         return ResponseEntity.badRequest()
             .body(responseBody);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiError> handleNoHandlerFoundException(final NoHandlerFoundException exception) {
+        logError(exception);
         return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(NoStacktraceException.class)
-    public ResponseEntity<ApiError> handleNoStacktraceException(final NoStacktraceException exception) {
-        final var responseBody = ApiError.from(exception);
-        return ResponseEntity.status(BAD_REQUEST)
-            .body(responseBody);
     }
 
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ApiError> handleDomainException(final DomainException exception) {
         final var responseBody = ApiError.from(exception.getMessage(), exception.errors().stream().map(Error::message).toList());
+        logError(exception);
         return ResponseEntity.status(UNPROCESSABLE_ENTITY)
             .body(responseBody);
     }
@@ -181,6 +174,10 @@ public class GlobalExceptionHandler {
             }
             return error.getDefaultMessage();
         };
+    }
+
+    private static void logError(final Throwable throwable) {
+        log.error("Request error", throwable);
     }
 
 }
