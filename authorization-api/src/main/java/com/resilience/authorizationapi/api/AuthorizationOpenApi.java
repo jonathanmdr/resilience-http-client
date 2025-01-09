@@ -3,6 +3,7 @@ package com.resilience.authorizationapi.api;
 import com.resilience.authorizationapi.api.GlobalExceptionHandler.ApiError;
 import com.resilience.authorizationapi.authorization.models.AuthorizationRequest;
 import com.resilience.authorizationapi.authorization.models.AuthorizationResponse;
+import com.resilience.authorizationapi.authorization.models.GetAuthorizationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -122,21 +123,11 @@ import java.util.UUID;
                 responses = {
                     @ApiResponse(
                         responseCode = "200",
-                        description = "Authorization processed previously successfully",
+                        description = "Resource retrieved successfully",
                         content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(
-                                implementation = AuthorizationResponse.class
-                            )
-                        )
-                    ),
-                    @ApiResponse(
-                        responseCode = "201",
-                        description = "Authorization processed successfully",
-                        content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(
-                                implementation = AuthorizationResponse.class
+                                implementation = GetAuthorizationResponse.class
                             )
                         )
                     ),

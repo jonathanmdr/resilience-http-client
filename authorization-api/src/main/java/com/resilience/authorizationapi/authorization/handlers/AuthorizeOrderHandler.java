@@ -60,7 +60,7 @@ public class AuthorizeOrderHandler implements HandlerFunction<ServerResponse> {
 
         if (entityExists.isPresent()) {
             return ServerResponse.ok()
-                .body(entityExists.get().toResponse());
+                .body(AuthorizationResponse.from(entityExists.get()));
         }
 
         final boolean shouldBeApproved = AUTHORIZATION_LIMIT_VALUE.compareTo(request.orderAmount()) >= 0;
@@ -73,7 +73,8 @@ public class AuthorizeOrderHandler implements HandlerFunction<ServerResponse> {
             .path("/{id}")
             .buildAndExpand(request.authorizationId())
             .toUri();
-        final AuthorizationResponse response = this.authorizationRepository.save(entity).toResponse();
+        final AuthorizationJpaEntity authorizationJpaEntity = this.authorizationRepository.save(entity);
+        final AuthorizationResponse response = AuthorizationResponse.from(authorizationJpaEntity);
 
         return ServerResponse.created(location)
             .body(response);

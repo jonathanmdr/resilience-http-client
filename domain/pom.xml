@@ -7,6 +7,7 @@
         <groupId>com.resilience</groupId>
         <artifactId>resilience-http-client</artifactId>
         <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.resilience.domain</groupId>

@@ -33,6 +33,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-### Otel Agent ###
-.otel-dev/otel.jar

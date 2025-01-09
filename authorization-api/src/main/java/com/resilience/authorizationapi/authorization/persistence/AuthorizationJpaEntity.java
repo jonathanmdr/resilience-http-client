@@ -1,7 +1,6 @@
 package com.resilience.authorizationapi.authorization.persistence;
 
 import com.resilience.authorizationapi.authorization.models.AuthorizationRequest;
-import com.resilience.authorizationapi.authorization.models.AuthorizationResponse;
 import com.resilience.domain.authorization.AuthorizationStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,16 +62,20 @@ public class AuthorizationJpaEntity {
         return new AuthorizationJpaEntity(request.authorizationId(), request.orderId(), request.customerId(), request.orderAmount(), AuthorizationStatus.REFUSED);
     }
 
-    public AuthorizationResponse toResponse() {
-        return new AuthorizationResponse(this.status.name());
-    }
-
     public String getId() {
         return this.id;
     }
 
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(final String orderId) {
+        this.orderId = orderId;
     }
 
     public String getCustomerId() {

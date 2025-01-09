@@ -7,6 +7,7 @@
         <groupId>com.resilience</groupId>
         <artifactId>resilience-http-client</artifactId>
         <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.resilience.authorizationapi</groupId>
@@ -120,6 +121,7 @@
             <groupId>com.resilience.domain</groupId>
             <artifactId>domain</artifactId>
             <version>${project.parent.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -162,6 +164,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
+                <configuration>
+                    <mainClass>com.resilience.authorizationapi.AuthorizationApi</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

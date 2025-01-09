@@ -1,5 +1,6 @@
 package com.resilience.authorizationapi.authorization.handlers;
 
+import com.resilience.authorizationapi.authorization.models.GetAuthorizationResponse;
 import com.resilience.authorizationapi.authorization.persistence.AuthorizationJpaEntity;
 import com.resilience.authorizationapi.authorization.persistence.AuthorizationRepository;
 import com.resilience.domain.exception.NoStacktraceException;
@@ -30,8 +31,8 @@ public class GetAuthorizationHandler implements HandlerFunction<ServerResponse> 
 
         final Optional<AuthorizationJpaEntity> entityExists = this.authorizationRepository.findById(authorizationId);
 
-        return entityExists.map(entity -> ServerResponse.ok().body(entity.toResponse()))
-            .orElseGet(() -> ServerResponse.notFound().build());
+        return entityExists.map(entity -> ServerResponse.ok().body(GetAuthorizationResponse.from(entity)))
+                .orElseGet(() -> ServerResponse.notFound().build());
     }
 
 }

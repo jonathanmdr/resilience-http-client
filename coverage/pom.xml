@@ -7,6 +7,7 @@
         <groupId>com.resilience</groupId>
         <artifactId>resilience-http-client</artifactId>
         <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>coverage</artifactId>
@@ -28,27 +29,32 @@
         <dependency>
             <groupId>com.resilience.domain</groupId>
             <artifactId>domain</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.resilience.application</groupId>
             <artifactId>application</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.resilience.orderapi</groupId>
             <artifactId>order-api</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.resilience.orderworker</groupId>
             <artifactId>order-worker</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.resilience.authorizationapi</groupId>
             <artifactId>authorization-api</artifactId>
-            <version>0.0.1</version>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

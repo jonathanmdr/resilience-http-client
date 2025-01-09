@@ -33,10 +33,10 @@ management:
 
 # DATABASE CONFIGURATIONS
 database:
-    url: localhost:3307
-    schema-name: authorizations
-    username: root
-    password: root
+    url: ${DATABASE_URL:localhost:3307}
+    schema-name: ${DATABASE_SCHEMA:authorizations}
+    username: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:root}
 
 # SPRING CONFIGURATION
 spring:

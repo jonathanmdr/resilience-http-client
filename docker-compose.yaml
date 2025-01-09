@@ -1,5 +1,107 @@
 services:
 
+  order-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-manager:latest
+    container_name: order-api
+    entrypoint: ["java", "-javaagent:otel.jar", "-jar", "order-api.jar"]
+    hostname: order-api
+    restart: "no"
+    environment:
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_LOGS_EXPORTER: none
+      OTEL_SERVICE_NAME: order-api
+      DATABASE_URL: order-api.database:3306
+      KAFKA_BROKER_HOSTS: order-api.broker:19092
+      KAFKA_PROTOCOL: PLAINTEXT
+      AUTHORIZATION_CLIENT_BASE_URL: http://authorization-api:8081
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order-api.database
+      - order-api.broker
+      - authorization-api
+      - otel-collector
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  authorization-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-manager:latest
+    container_name: authorization-api
+    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "authorization-api.jar" ]
+    hostname: authorization-api
+    restart: "no"
+    environment:
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_LOGS_EXPORTER: none
+      OTEL_SERVICE_NAME: authorization-api
+      DATABASE_URL: authorization-api.database:3306
+    ports:
+      - "8081:8081"
+    depends_on:
+      - authorization-api.database
+      - otel-collector
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8081/health || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  order-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-manager:latest
+    container_name: order-worker
+    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "order-worker.jar" ]
+    hostname: order-worker
+    restart: "no"
+    environment:
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_LOGS_EXPORTER: none
+      OTEL_SERVICE_NAME: order-worker
+      DATABASE_URL: order-api.database:3306
+      KAFKA_BROKER_HOSTS: order-api.broker:19092
+      KAFKA_PROTOCOL: PLAINTEXT
+    depends_on:
+      - order-api.database
+      - order-api.broker
+      - otel-collector
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "echo healthy || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
   order-api.database:
     image: docker.io/bitnami/mysql:8.0
     container_name: order-api.database
@@ -114,9 +216,9 @@ services:
     command:
       - --config=/etc/otel-collector-config.yaml
     ports:
-      # HTTP port
-      - "4317:4317"
       # gRPC port
+      - "4317:4317"
+      # HTTP port
       - "4318:4318"
       # Otel collector metrics port
       - "8888:8888"
