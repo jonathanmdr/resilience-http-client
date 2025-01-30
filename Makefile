@@ -1,4 +1,4 @@
-.PHONY: clean install test version up down restart otel-agent bulkhead
+.PHONY: clean install test version build up down restart otel-agent bulkhead
 
 clean:
 	@mvn clean
@@ -10,7 +10,10 @@ test:
 	@mvn clean test
 
 version:
-	@mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$1
+	@mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$1 -DprocessAllModules
+
+build:
+	@docker build -t order-manager:latest .
 
 up:
 	@docker-compose up -d
