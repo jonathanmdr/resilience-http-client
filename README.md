@@ -1,4 +1,5 @@
-# Sample modular project for explain about resilient HTTP clients
+# Sample of Resilience Patterns for Services Integration
+> Explanations about patterns applied on API, HTTP Client, and Pub/Sub integrations.
 
 ---
 
