@@ -15,10 +15,16 @@ public final class Result<S, E extends ValidationHandler> {
     }
 
     public static <S, E extends ValidationHandler> Result<S, E> success(final S sucess) {
+        if (sucess == null) {
+            throw DomainException.with(Error.of("The 'success' object must not be null"));
+        }
         return new Result<>(sucess, null);
     }
 
     public static <S, E extends ValidationHandler> Result<S, E> error(final E error) {
+        if (error == null) {
+            throw DomainException.with(Error.of("The 'error' object must not be null"));
+        }
         return new Result<>(null, error);
     }
 

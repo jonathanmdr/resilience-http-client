@@ -5,6 +5,8 @@ import com.resilience.domain.validation.Error;
 import com.resilience.domain.validation.ValidationHandler;
 import com.resilience.domain.validation.handler.NotificationHandler;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Optional;
 
@@ -80,6 +82,22 @@ class ResultUnitTest {
         assertThatThrownBy(clientResponse::error)
             .isInstanceOf(DomainException.class)
             .hasMessage("The 'error' object cannot be invoked when an 'success' object exists");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void givenASuccessResponse_whenCreateWithNullableValue_shouldThrowsBusinessException(final Object object) {
+        assertThatThrownBy(() -> Result.success(object))
+            .isInstanceOf(DomainException.class)
+            .hasMessage("The 'success' object must not be null");
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void givenAnErrorResponse_whenCreateWithNullableValue_shouldThrowsBusinessException(final ValidationHandler validationHandler) {
+        assertThatThrownBy(() -> Result.error(validationHandler))
+            .isInstanceOf(DomainException.class)
+            .hasMessage("The 'error' object must not be null");
     }
 
 }
