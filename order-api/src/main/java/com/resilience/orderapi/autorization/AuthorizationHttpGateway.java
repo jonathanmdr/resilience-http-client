@@ -10,17 +10,20 @@ import com.resilience.orderapi.autorization.integration.AuthorizationClient;
 import com.resilience.orderapi.autorization.integration.AuthorizationRequest;
 import com.resilience.orderapi.autorization.integration.AuthorizationResponse;
 import com.resilience.orderapi.integration.http.HttpIntegrationException;
+import com.resilience.orderapi.integration.messaging.StreamBinding;
+import com.resilience.orderapi.integration.messaging.StreamEventPublisher;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthorizationHttpGateway implements AuthorizationGateway {
 
     private final AuthorizationClient authorizationClient;
-    private final DomainEventPublisher domainEventPublisher;
+    private final StreamBridge streamBridge;
 
-    public AuthorizationHttpGateway(final AuthorizationClient authorizationClient, final DomainEventPublisher domainEventPublisher) {
+    public AuthorizationHttpGateway(final AuthorizationClient authorizationClient, final StreamBridge streamBridge) {
         this.authorizationClient = authorizationClient;
-        this.domainEventPublisher = domainEventPublisher;
+        this.streamBridge = streamBridge;
     }
 
     @Override
@@ -36,7 +39,8 @@ public class AuthorizationHttpGateway implements AuthorizationGateway {
         final AuthorizationResponse response = result.success();
         final Authorization processedAuthorization = authorization.authorize(AuthorizationStatusTranslatorService.create(response.status()));
 
-        processedAuthorization.dispatch(this.domainEventPublisher);
+        final DomainEventPublisher domainEventPublisher = StreamEventPublisher.create(this.streamBridge, StreamBinding.AUTHORIZATION_ORDER_EVENTS);
+        processedAuthorization.dispatch(domainEventPublisher);
 
         return processedAuthorization;
     }

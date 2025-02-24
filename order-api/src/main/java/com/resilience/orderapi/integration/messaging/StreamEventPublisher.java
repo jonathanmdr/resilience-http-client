@@ -5,21 +5,25 @@ import com.resilience.domain.events.DomainEventPublisher;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Component;
 
-@Component
-public final class StreamBridgeEventPublisher implements DomainEventPublisher {
+public final class StreamEventPublisher implements DomainEventPublisher {
 
     private final StreamBridge streamBridge;
+    private final StreamBinding streamBinding;
 
-    public StreamBridgeEventPublisher(final StreamBridge streamBridge) {
+    private StreamEventPublisher(final StreamBridge streamBridge, final StreamBinding streamBinding) {
         this.streamBridge = streamBridge;
+        this.streamBinding = streamBinding;
+    }
+
+    public static StreamEventPublisher create(final StreamBridge streamBridge, final StreamBinding streamBinding) {
+        return new StreamEventPublisher(streamBridge, streamBinding);
     }
 
     @Override
     public void publish(final DomainEvent event) {
         final Message<DomainEvent> domainEventMessage = MessageBuilder.withPayload(event).build();
-        this.streamBridge.send(StreamBridgeBinding.AUTHORIZATION_ORDER_EVENTS.key(), domainEventMessage);
+        this.streamBridge.send(this.streamBinding.key(), domainEventMessage);
     }
 
 }
