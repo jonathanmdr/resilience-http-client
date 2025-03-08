@@ -23,7 +23,7 @@ public final class DefaultGetOrderByIdUseCase extends GetOrderByIdUseCase {
         final Optional<Order> retrievedOrder = super.orderGateway.findById(orderId);
 
         if (retrievedOrder.isEmpty()) {
-            handler.append(new Error("Order '%s' not found".formatted(orderId.value())));
+            handler.append(Error.of("Order '%s' not found".formatted(orderId.value())));
             return Result.error(handler);
         }
 

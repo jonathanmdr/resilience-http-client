@@ -27,7 +27,7 @@ public final class DefaultAuthorizeOrderUseCase extends AuthorizeOrderUseCase {
         final Optional<Order> retrievedOrder = super.orderGateway.findById(orderId);
 
         if (retrievedOrder.isEmpty()) {
-            handler.append(new Error("Order '%s' not found".formatted(orderId.value())));
+            handler.append(Error.of("Order '%s' not found".formatted(orderId.value())));
             return Result.error(handler);
         }
 
@@ -36,7 +36,8 @@ public final class DefaultAuthorizeOrderUseCase extends AuthorizeOrderUseCase {
 
         if (order.isFinalized()) {
             final AuthorizationProcessedStatusTranslator translator = AuthorizationProcessedStatusTranslatorService.create(order.status());
-            return Result.success(AuthorizeOrderOutput.with(authorization.id().value(), translator.get().name()));
+            final AuthorizeOrderOutput output = AuthorizeOrderOutput.with(authorization.id().value(), translator.get().name());
+            return Result.success(output);
         }
 
         authorization.validate(handler);

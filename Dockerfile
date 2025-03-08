@@ -1,4 +1,4 @@
-FROM maven:3.9.9-amazoncorretto-21 AS build
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 
 WORKDIR /build
 
@@ -12,7 +12,7 @@ COPY authorization-api authorization-api
 
 RUN mvn package -DskipTests --batch-mode
 
-FROM azul/zulu-openjdk:21 AS release
+FROM eclipse-temurin:21-jre-alpine-3.21 AS release
 
 WORKDIR /app
 
@@ -22,9 +22,11 @@ COPY --from=build /build/authorization-api/target/*.jar authorization-api.jar
 COPY .otel-dev/otel.jar .
 COPY docker-entrypoint.sh .
 
-RUN useradd ecommerce && \
-    chmod +x docker-entrypoint.sh
+RUN addgroup -S ecommerce && \
+    adduser -S -G ecommerce ecommerce && \
+    chmod +x docker-entrypoint.sh && \
+    rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-USER ecommerce
+USER ecommerce:ecommerce
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

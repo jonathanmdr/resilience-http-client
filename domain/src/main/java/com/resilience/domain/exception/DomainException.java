@@ -7,7 +7,8 @@ import java.util.List;
 
 public class DomainException extends NoStacktraceException {
 
-    private final transient List<Error> errors;
+    @SuppressWarnings("java:S1948")
+    private final List<Error> errors;
 
     private DomainException(final String message) {
         super(message);
