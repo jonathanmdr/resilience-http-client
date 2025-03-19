@@ -32,10 +32,10 @@ services:
     networks:
       - ecommerce-network
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/health || exit 1" ]
+      test: [ "CMD-SHELL", "/app/healthcheck.sh order-api api http://localhost:8080/health" ]
       interval: 15s
-      timeout: 10s
-      retries: 3
+      timeout: 5s
+      retries: 6
 
   authorization-api:
     build:
@@ -64,10 +64,10 @@ services:
     networks:
       - ecommerce-network
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8081/health || exit 1" ]
+      test: [ "CMD-SHELL", "/app/healthcheck.sh authorization-api api http://localhost:8081/health" ]
       interval: 15s
-      timeout: 10s
-      retries: 3
+      timeout: 5s
+      retries: 6
 
   order-worker:
     build:
@@ -97,10 +97,10 @@ services:
     networks:
       - ecommerce-network
     healthcheck:
-      test: [ "CMD-SHELL", "echo healthy || exit 1" ]
+      test: [ "CMD-SHELL", "/app/healthcheck.sh order-worker worker order-worker.jar" ]
       interval: 15s
-      timeout: 10s
-      retries: 3
+      timeout: 5s
+      retries: 6
 
   order-api.database:
     image: docker.io/bitnami/mysql:8.0

@@ -21,10 +21,13 @@ COPY --from=build /build/order-worker/target/*.jar order-worker.jar
 COPY --from=build /build/authorization-api/target/*.jar authorization-api.jar
 COPY .otel-dev/otel.jar .
 COPY docker-entrypoint.sh .
+COPY healthcheck.sh .
 
 RUN addgroup -S ecommerce && \
     adduser -S -G ecommerce ecommerce && \
     chmod +x docker-entrypoint.sh && \
+    chmod +x healthcheck.sh && \
+    apk add --no-cache curl jq && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 USER ecommerce:ecommerce
