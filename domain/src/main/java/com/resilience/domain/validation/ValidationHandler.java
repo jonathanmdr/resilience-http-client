@@ -1,5 +1,7 @@
 package com.resilience.domain.validation;
 
+import com.resilience.domain.common.CollectionUtils;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ public interface ValidationHandler {
     }
 
     default boolean hasErrors() {
-        return !errors().isEmpty();
+        return CollectionUtils.isNotNullOrEmpty(errors());
     }
 
     default Optional<Error> firstError() {

@@ -1,6 +1,7 @@
 package com.resilience.orderworker.authorization.persistence;
 
 import com.resilience.domain.authorization.AuthorizationProcessedEvent;
+import com.resilience.domain.common.ByteArrayUtils;
 import com.resilience.domain.exception.NoStacktraceException;
 import com.resilience.orderworker.configuration.Json;
 import jakarta.persistence.Column;
@@ -103,8 +104,8 @@ public class AuthorizationProcessedDltJpaEntity {
     private static String extractErrorFrom(final Message<AuthorizationProcessedEvent> message) {
         final byte[] stackTraceByteArray = message.getHeaders().get("x-exception-stacktrace", byte[].class);
 
-        if (stackTraceByteArray != null && stackTraceByteArray.length > 0) {
-            return new String(stackTraceByteArray);
+        if (ByteArrayUtils.isNotNullOrEmpty(stackTraceByteArray)) {
+            return new String(stackTraceByteArray, StandardCharsets.UTF_8);
         }
 
         return "The root cause cannot be obtained from exceptions raised during processing";
