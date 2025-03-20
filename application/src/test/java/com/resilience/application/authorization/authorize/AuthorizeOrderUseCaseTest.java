@@ -32,7 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class UpdateOrderUseCaseTest extends MockSupportTest {
+class AuthorizeOrderUseCaseTest extends MockSupportTest {
 
     @Mock
     private OrderGateway orderGateway;

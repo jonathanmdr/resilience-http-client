@@ -2,6 +2,7 @@ package com.resilience.orderworker;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.lang.annotation.ElementType;
@@ -17,5 +18,11 @@ import java.lang.annotation.Target;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ExtendWith(CleanupDatabaseExtension.class)
 public @interface IntegrationTest {
+
+    @AliasFor(annotation = SpringBootTest.class, attribute = "properties")
+    String[] properties() default {};
+
+    @AliasFor(annotation = SpringBootTest.class, attribute = "classes")
+    Class<?>[] classes() default {};
 
 }

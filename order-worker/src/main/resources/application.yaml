@@ -102,3 +102,17 @@ logging:
     appender: CONSOLE
     pattern:
         console: "%d{yyyy-MM-dd HH:mm:ss.SSS} TraceId: %X{trace_id} SpanId: %X{span_id} %highlight(%-5level) %magenta([%t]) %msg%n"
+
+# APPLICATION CONFIGURATION
+application:
+    schedulers:
+        enabled: true
+        configuration:
+            enable-virtual-threads: true
+            graceful-shutdown-enabled: true
+            graceful-await-termination-in-seconds: 60
+        jobs:
+            cleanup-authorizations-processed-dlt:
+                cron: "0 0/10 * * * *"
+                zone: "America/Sao_Paulo"
+                batch-size: 100

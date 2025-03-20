@@ -111,7 +111,7 @@ spring:
                                 stream:
                                     kafka:
                                         binder:
-                                            brokers: ${KAFKA_BROKER_HOSTS:"localhost:9092"}
+                                            brokers: ${KAFKA_BROKER_HOSTS:localhost:9092}
                                             configuration:
                                                 security:
                                                     protocol: ${KAFKA_PROTOCOL:SASL_PLAINTEXT}

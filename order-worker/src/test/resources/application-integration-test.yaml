@@ -32,3 +32,13 @@ spring:
 # LOGGING CONFIGURATION
 logging:
     appender: CONSOLE
+
+# APPLICATION CONFIGURATION
+application:
+    schedulers:
+        enabled: false
+        jobs:
+            cleanup-authorizations-processed-dlt:
+                cron: "0/1 * * * * *"
+                zone: "America/Sao_Paulo"
+                batch-size: 10
