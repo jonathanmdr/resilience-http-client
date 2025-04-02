@@ -4,10 +4,10 @@ clean:
 	@mvn clean
 
 install:
-	@mvn clean install
+	@mvn clean install -Dmaven.test.skip=true
 
 test:
-	@mvn clean test
+	@mvn test
 
 version:
 	@mvn versions:set -DgenerateBackupPoms=false -DnewVersion=$1 -DprocessAllModules
