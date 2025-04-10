@@ -16,6 +16,7 @@ public class HttpClientExtension implements BeforeEachCallback {
     public void beforeEach(final ExtensionContext context) {
         if (context.getRequiredTestClass().isAnnotationPresent(HttpClientIntegrationTest.class)) {
             WireMock.reset();
+            WireMock.resetAllRequests();
         }
 
         final ApplicationContext applicationContext = SpringExtension.getApplicationContext(context);

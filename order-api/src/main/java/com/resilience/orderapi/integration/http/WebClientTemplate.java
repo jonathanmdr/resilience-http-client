@@ -25,6 +25,7 @@ import reactor.util.retry.Retry;
 import reactor.util.retry.RetryBackoffSpec;
 
 import javax.net.ssl.SSLException;
+import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -113,7 +114,7 @@ public class WebClientTemplate {
             return this.retrievableHttpStatusCodes.contains(exception.getStatusCode());
         }
 
-        return ex instanceof TimeoutException;
+        return ex instanceof TimeoutException || ex instanceof HttpTimeoutException;
     }
 
     protected void logRetry(final long totalRetries, final Throwable failure) {
