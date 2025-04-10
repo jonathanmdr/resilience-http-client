@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
         BulkheadAutoConfiguration.class
     }
 )
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@EnableAspectJAutoProxy
 @AutoConfigureWireMock(port = 9090)
 @ExtendWith(HttpClientExtension.class)
 public @interface HttpClientIntegrationTest {
