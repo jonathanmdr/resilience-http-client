@@ -36,6 +36,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 6
+    profiles:
+      - services
 
   authorization-api:
     build:
@@ -68,6 +70,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 6
+    profiles:
+      - services
 
   order-worker:
     build:
@@ -101,6 +105,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 6
+    profiles:
+      - services
 
   order-api.database:
     image: docker.io/bitnami/mysql:8.0
@@ -125,6 +131,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 6
+    profiles:
+      - stack
 
   authorization-api.database:
     image: docker.io/bitnami/mysql:8.0
@@ -148,6 +156,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 6
+    profiles:
+      - stack
 
   order-api.broker:
     image: docker.io/bitnami/kafka:3.7
@@ -176,6 +186,8 @@ services:
       - ecommerce-network
     volumes:
       - kafka-order-api-data:/bitnami
+    profiles:
+      - stack
 
   order-api.kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -190,6 +202,8 @@ services:
       - order-api.broker
     networks:
       - ecommerce-network
+    profiles:
+      - stack
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -207,6 +221,8 @@ services:
       - prometheus
     networks:
       - ecommerce-network
+    profiles:
+      - stack
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.68.0
@@ -231,6 +247,8 @@ services:
       - prometheus
     networks:
       - ecommerce-network
+    profiles:
+      - stack
 
   prometheus:
     image: prom/prometheus:v2.41.0
@@ -252,6 +270,8 @@ services:
       - .otel-dev/prometheus.yaml:/etc/prometheus/prometheus.yml
     networks:
       - ecommerce-network
+    profiles:
+      - stack
 
   grafana:
     image: grafana/grafana:9.3.2
@@ -270,6 +290,8 @@ services:
       - prometheus
     networks:
       - ecommerce-network
+    profiles:
+      - stack
 
 networks:
   ecommerce-network:

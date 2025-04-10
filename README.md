@@ -6,34 +6,100 @@
 ## Project Structure
 ![example of structure](.docs/example.png)
 
-## Upping The Development Environment
+## Profiles
+| Profile     | Description                                                                  |
+|-------------|------------------------------------------------------------------------------|
+| `stack`     | Contains the stack of services that are used in the development environment. |
+| `services`  | Contains the APIs and Workers that are used in the development environment.  |
+
+## Upping The Development Stack and Services Environment
 ```shell
 # With docker-compose
-docker-compose up -d
+docker-compose --profile stack services up -d
 ```
 ```shell
 # With Make
 make up
 ```
 
-## Restarting The Development Environment
+## Upping The Only Development Stack Environment
 ```shell
 # With docker-compose
-docker-compose restart
+docker-compose --profile stack up -d
+```
+```shell
+# With Make
+make up-stack
+```
+
+## Upping The Only Development Services Environment
+```shell
+# With docker-compose
+docker-compose --profile services up -d
+```
+```shell
+# With Make
+make up-services
+```
+
+## Restarting The Development Stack and Services Environment
+```shell
+# With docker-compose
+docker-compose --profile stack services restart
 ```
 ```shell
 # With Make
 make restart
 ```
 
-## Downing The Development Environment
+## Restarting The Only Development Stack Environment
 ```shell
 # With docker-compose
-docker-compose down --remove-orphans --volumes
+docker-compose --profile stack restart
+```
+```shell
+# With Make
+make restart-stack
+```
+
+## Restarting The Only Development Services Environment
+```shell
+# With docker-compose
+docker-compose --profile services restart
+```
+```shell
+# With Make
+make restart-services
+```
+
+## Downing The Development Stack and Services Environment
+```shell
+# With docker-compose
+docker-compose --profile stack services down --remove-orphans --volumes
 ```
 ```shell
 # With Make
 make down
+```
+
+## Downing The Only Development Stack Environment
+```shell
+# With docker-compose
+docker-compose --profile stack down --remove-orphans --volumes
+```
+```shell
+# With Make
+make down-stack
+```
+
+## Downing The Development Services Environment
+```shell
+# With docker-compose
+docker-compose --profile services down --remove-orphans --volumes
+```
+```shell
+# With Make
+make down-services
 ```
 
 ## Downloading The OpenTelemetry Agent
@@ -80,14 +146,17 @@ OTEL_LOGS_EXPORTER=none
 OTEL_SERVICE_NAME=order-worker
 ```
 
-## Hosts Dev
-| Host                   | Description                       |
-|------------------------|-----------------------------------|
-| http://localhost:8080  | OpenAPI Order API                 |
-| http://localhost:8081  | OpenAPI Authorization API         |
-| http://localhost:8580  | Kafka UI                          |
-| http://localhost:4317  | OpenTelemetry GRPC Collector Port |
-| http://localhost:4318  | OpenTelemetry HTTP Collector Port |
-| http://localhost:16666 | Jaeger                            |
-| http://localhost:9090  | Prometheus                        |
-| http://localhost:3000  | Grafana                           |
+## Development Environment URLs
+| Host                                         | Description                       | Profiles   |
+|----------------------------------------------|-----------------------------------|------------|
+| http://localhost:8080                        | OpenAPI Order API                 | `services` |
+| http://localhost:8081                        | OpenAPI Authorization API         | `services` |
+| `noop`                                       | Order Worker                      | `services` |
+| `jdbc:mysql://localhost:3306/ecommerce`      | Order Database                    | `stack`    |
+| `jdbc:mysql://localhost:3307/authorizations` | Authorization Database            | `stack`    |
+| http://localhost:8580                        | Kafka UI                          | `stack`    |
+| http://localhost:4317                        | OpenTelemetry GRPC Collector Port | `stack`    |
+| http://localhost:4318                        | OpenTelemetry HTTP Collector Port | `stack`    |
+| http://localhost:16666                       | Jaeger                            | `stack`    |
+| http://localhost:9090                        | Prometheus                        | `stack`    |
+| http://localhost:3000                        | Grafana                           | `stack`    |
