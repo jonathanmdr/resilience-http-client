@@ -15,14 +15,14 @@
 ## Upping The Development Stack and Services Environment
 ```shell
 # With docker-compose
-docker-compose --profile stack services up -d
+docker-compose --profile stack --profile services up -d
 ```
 ```shell
 # With Make
 make up
 ```
 
-## Upping The Only Development Stack Environment
+## Upping The Development Stack Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile stack up -d
@@ -32,7 +32,7 @@ docker-compose --profile stack up -d
 make up-stack
 ```
 
-## Upping The Only Development Services Environment
+## Upping The Development Services Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile services up -d
@@ -45,14 +45,14 @@ make up-services
 ## Restarting The Development Stack and Services Environment
 ```shell
 # With docker-compose
-docker-compose --profile stack services restart
+docker-compose --profile stack --profile services restart
 ```
 ```shell
 # With Make
 make restart
 ```
 
-## Restarting The Only Development Stack Environment
+## Restarting The Development Stack Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile stack restart
@@ -62,7 +62,7 @@ docker-compose --profile stack restart
 make restart-stack
 ```
 
-## Restarting The Only Development Services Environment
+## Restarting The Development Services Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile services restart
@@ -75,14 +75,14 @@ make restart-services
 ## Downing The Development Stack and Services Environment
 ```shell
 # With docker-compose
-docker-compose --profile stack services down --remove-orphans --volumes
+docker-compose --profile stack --profile services down --remove-orphans --volumes
 ```
 ```shell
 # With Make
 make down
 ```
 
-## Downing The Only Development Stack Environment
+## Downing The Development Stack Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile stack down --remove-orphans --volumes
@@ -92,7 +92,7 @@ docker-compose --profile stack down --remove-orphans --volumes
 make down-stack
 ```
 
-## Downing The Development Services Environment
+## Downing The Development Services Environment Only
 ```shell
 # With docker-compose
 docker-compose --profile services down --remove-orphans --volumes

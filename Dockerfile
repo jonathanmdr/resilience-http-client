@@ -10,7 +10,7 @@ COPY order-api order-api
 COPY order-worker order-worker
 COPY authorization-api authorization-api
 
-RUN mvn package -DskipTests --batch-mode
+RUN mvn package -Dmaven.test.skip=true --batch-mode
 
 FROM eclipse-temurin:21-jre-alpine-3.21 AS release
 

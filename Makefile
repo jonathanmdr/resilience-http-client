@@ -20,7 +20,7 @@ build:
 
 .PHONY: up
 up:
-	@docker-compose --profile stack services up -d
+	@docker-compose --profile stack --profile services up -d
 
 .PHONY: up-stack
 up-stack:
@@ -32,7 +32,7 @@ up-services:
 
 .PHONY: down
 down:
-	@docker-compose --profile stack services down --remove-orphans --volumes
+	@docker-compose --profile stack --profile services down --remove-orphans --volumes
 
 .PHONY: down-stack
 down-stack:
@@ -44,7 +44,7 @@ down-services:
 
 .PHONY: restart
 restart:
-	@docker-compose --profile stack services restart
+	@docker-compose --profile stack --profile services restart
 
 .PHONY: restart-stack
 restart-stack:
