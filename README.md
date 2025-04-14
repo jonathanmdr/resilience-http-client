@@ -4,13 +4,13 @@
 ---
 
 ## Project Structure
-![example of structure](.docs/example.png)
+![example of structure](.docs/img.png)
 
 ## Profiles
-| Profile     | Description                                                                  |
-|-------------|------------------------------------------------------------------------------|
-| `stack`     | Contains the stack of services that are used in the development environment. |
-| `services`  | Contains the APIs and Workers that are used in the development environment.  |
+| Profile    | Description                                                                  |
+|------------|------------------------------------------------------------------------------|
+| `stack`    | Contains the stack of services that are used in the development environment. |
+| `services` | Contains the APIs and Workers that are used in the development environment.  |
 
 ## Upping The Development Stack and Services Environment
 ```shell
@@ -102,6 +102,16 @@ docker-compose --profile services down --remove-orphans --volumes
 make down-services
 ```
 
+## Register CDC Source Connectors
+```shell
+# With bash
+./connectors.sh
+```
+```shell
+# With Make
+make connectors
+```
+
 ## Downloading The OpenTelemetry Agent
 ```shell
 make otel-agent
@@ -146,17 +156,105 @@ OTEL_LOGS_EXPORTER=none
 OTEL_SERVICE_NAME=order-worker
 ```
 
+### audit-worker
+```
+OTEL_METRICS_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
+OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_LOGS_EXPORTER=none
+OTEL_SERVICE_NAME=audit-worker
+```
+
 ## Development Environment URLs
 | Host                                         | Description                       | Profiles   |
 |----------------------------------------------|-----------------------------------|------------|
 | http://localhost:8080                        | OpenAPI Order API                 | `services` |
 | http://localhost:8081                        | OpenAPI Authorization API         | `services` |
 | `noop`                                       | Order Worker                      | `services` |
-| `jdbc:mysql://localhost:3306/ecommerce`      | Order Database                    | `stack`    |
+| `noop`                                       | Audit Worker                      | `services` |
+| `jdbc:mysql://localhost:3306/orders`         | Order Database                    | `stack`    |
+| `mongodb://root:root@localhost:27017/audit`  | Authorization CDC Database        | `stack`    |
 | `jdbc:mysql://localhost:3307/authorizations` | Authorization Database            | `stack`    |
 | http://localhost:8580                        | Kafka UI                          | `stack`    |
+| http://localhost:8083                        | Kafka Connect API                 | `stack`    |
 | http://localhost:4317                        | OpenTelemetry GRPC Collector Port | `stack`    |
 | http://localhost:4318                        | OpenTelemetry HTTP Collector Port | `stack`    |
 | http://localhost:16666                       | Jaeger                            | `stack`    |
 | http://localhost:9090                        | Prometheus                        | `stack`    |
 | http://localhost:3000                        | Grafana                           | `stack`    |
+
+
+## Register the CDC Authorizations Source Connector
+```shell
+curl --request POST \
+  --url http://localhost:8083/connectors \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "authorizations-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "mysql-authorizations",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "root",
+    "database.server.id": "10000",
+    "database.include.list": "authorizations",
+    "table.ignore.broken.offsets": "true",
+    "table.include.list": "authorizations.authorizations",
+    "include.schema.changes": "false",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka-broker:19092",
+    "schema.history.internal.kafka.topic": "connect-cdc-schema-history",
+    "topic.prefix": "authorizations",
+    "transforms": "RenameTopic",
+    "transforms.RenameTopic.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.RenameTopic.regex": ".*",
+    "transforms.RenameTopic.replacement": "connect-cdc-authorization-events",
+    "snapshot.mode": "initial",
+    "max.batch.size": "2048",
+    "max.queue.size": "8192",
+    "poll.interval.ms": "1000",
+    "connect.timeout.ms": "30000",
+    "tombstones.on.delete": "false"
+  }
+}'
+```
+
+## Register the CDC Orders Source Connector
+```shell
+curl --request POST \
+  --url http://localhost:8083/connectors \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "name": "orders-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname": "mysql-orders",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "root",
+    "database.server.id": "10001",
+    "database.include.list": "orders",
+    "table.ignore.broken.offsets": "true",
+    "table.include.list": "orders.orders",
+    "include.schema.changes": "false",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka-broker:19092",
+    "schema.history.internal.kafka.topic": "connect-cdc-schema-history",
+    "topic.prefix": "orders",
+    "transforms": "RenameTopic",
+    "transforms.RenameTopic.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.RenameTopic.regex": ".*",
+    "transforms.RenameTopic.replacement": "connect-cdc-order-events",
+    "snapshot.mode": "initial",
+    "max.batch.size": "2048",
+    "max.queue.size": "8192",
+    "poll.interval.ms": "1000",
+    "connect.timeout.ms": "30000",
+    "tombstones.on.delete": "false"
+  }
+}'
+```

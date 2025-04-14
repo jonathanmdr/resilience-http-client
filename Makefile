@@ -30,6 +30,10 @@ up-stack:
 up-services:
 	@docker-compose --profile services up -d
 
+.PHONY: up-connect
+up-connect:
+	@docker-compose --profile connect up -d
+
 .PHONY: down
 down:
 	@docker-compose --profile stack --profile services down --remove-orphans --volumes
@@ -42,6 +46,10 @@ down-stack:
 down-services:
 	@docker-compose --profile services down --remove-orphans --volumes
 
+.PHONY: down-connect
+down-connect:
+	@docker-compose --profile connect down --remove-orphans --volumes
+
 .PHONY: restart
 restart:
 	@docker-compose --profile stack --profile services restart
@@ -53,6 +61,14 @@ restart-stack:
 .PHONY: restart-services
 restart-services:
 	@docker-compose --profile services restart
+
+.PHONY: restart-connect
+restart-connect:
+	@docker-compose --profile connect restart
+
+.PHONY: connectors
+connectors:
+	@./connectors.sh
 
 .PHONY: otel-agent
 otel-agent:

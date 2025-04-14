@@ -9,6 +9,7 @@ COPY coverage coverage
 COPY order-api order-api
 COPY order-worker order-worker
 COPY authorization-api authorization-api
+COPY audit-worker audit-worker
 
 RUN mvn package -Dmaven.test.skip=true --batch-mode
 
@@ -19,6 +20,7 @@ WORKDIR /app
 COPY --from=build /build/order-api/target/*.jar order-api.jar
 COPY --from=build /build/order-worker/target/*.jar order-worker.jar
 COPY --from=build /build/authorization-api/target/*.jar authorization-api.jar
+COPY --from=build /build/audit-worker/target/*.jar audit-worker.jar
 COPY .otel-dev/otel.jar .
 COPY docker-entrypoint.sh .
 COPY healthcheck.sh .

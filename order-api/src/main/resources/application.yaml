@@ -34,7 +34,7 @@ management:
 # DATABASE CONFIGURATIONS
 database:
     url: ${DATABASE_URL:localhost:3306}
-    schema-name: ${DATABASE_SCHEMA:ecommerce}
+    schema-name: ${DATABASE_SCHEMA:orders}
     username: ${DATABASE_USER:root}
     password: ${DATABASE_PASSWORD:root}
 

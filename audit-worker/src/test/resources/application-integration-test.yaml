@@ -2,17 +2,9 @@
 
 # DATABASE CONFIGURATIONS
 spring:
-    datasource:
-        driver-class-name: org.h2.Driver
-        url: jdbc:h2:mem:orders;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE
-        username: root
-        password: root
-    jpa:
-        show-sql: true
-        hibernate:
-            ddl-auto: update
-        properties:
-            "[hibernate.format_sql]": true
+    data:
+        mongodb:
+            uri: mongodb://root:root@localhost:27017/audit
 
 # SPRING CLOUD CONFIGURATION
     cloud:
@@ -32,13 +24,3 @@ spring:
 # LOGGING CONFIGURATION
 logging:
     appender: CONSOLE
-
-# APPLICATION CONFIGURATION
-application:
-    schedulers:
-        enabled: false
-        jobs:
-            cleanup-authorizations-processed-dlt:
-                cron: "0/1 * * * * *"
-                zone: "America/Sao_Paulo"
-                batch-size: 10

@@ -1,3 +1,5 @@
+name: ecommerce
+
 services:
 
   order-api:
@@ -18,15 +20,15 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
       OTEL_LOGS_EXPORTER: none
       OTEL_SERVICE_NAME: order-api
-      DATABASE_URL: order-api.database:3306
-      KAFKA_BROKER_HOSTS: order-api.broker:19092
+      DATABASE_URL: mysql-orders:3306
+      KAFKA_BROKER_HOSTS: kafka-broker:19092
       KAFKA_PROTOCOL: PLAINTEXT
       AUTHORIZATION_CLIENT_BASE_URL: http://authorization-api:8081
     ports:
       - "8080:8080"
     depends_on:
-      - order-api.database
-      - order-api.broker
+      - mysql-orders
+      - kafka-broker
       - authorization-api
       - otel-collector
     networks:
@@ -57,11 +59,11 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
       OTEL_LOGS_EXPORTER: none
       OTEL_SERVICE_NAME: authorization-api
-      DATABASE_URL: authorization-api.database:3306
+      DATABASE_URL: mysql-authorizations:3306
     ports:
       - "8081:8081"
     depends_on:
-      - authorization-api.database
+      - mysql-authorizations
       - otel-collector
     networks:
       - ecommerce-network
@@ -91,12 +93,12 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
       OTEL_LOGS_EXPORTER: none
       OTEL_SERVICE_NAME: order-worker
-      DATABASE_URL: order-api.database:3306
-      KAFKA_BROKER_HOSTS: order-api.broker:19092
+      DATABASE_URL: mysql-orders:3306
+      KAFKA_BROKER_HOSTS: kafka-broker:19092
       KAFKA_PROTOCOL: PLAINTEXT
     depends_on:
-      - order-api.database
-      - order-api.broker
+      - mysql-orders
+      - kafka-broker
       - otel-collector
     networks:
       - ecommerce-network
@@ -108,22 +110,57 @@ services:
     profiles:
       - services
 
-  order-api.database:
+  audit-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-manager:latest
+    container_name: audit-worker
+    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "audit-worker.jar" ]
+    hostname: audit-worker
+    restart: "no"
+    environment:
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_LOGS_EXPORTER: none
+      OTEL_SERVICE_NAME: audit-worker
+      DATABASE_URL: mongodb-audit:27017
+      KAFKA_BROKER_HOSTS: kafka-broker:19092
+      KAFKA_PROTOCOL: PLAINTEXT
+    depends_on:
+      - mongodb-audit
+      - kafka-broker
+      - otel-collector
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "/app/healthcheck.sh audit-worker worker audit-worker.jar" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    profiles:
+      - services
+
+  mysql-orders:
     image: docker.io/bitnami/mysql:8.0
-    container_name: order-api.database
-    hostname: order-api.database
+    container_name: mysql-orders
+    hostname: mysql-orders
     restart: "no"
     environment:
       MYSQL_USER: admin
-      MYSQL_DATABASE: ecommerce
+      MYSQL_DATABASE: orders
       ALLOW_EMPTY_PASSWORD: yes
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
       - mysql-order-api-data:/bitnami/mysql/data
-      - .migrations/ecommerce/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
-      - .migrations/ecommerce/V0002_create-table-authorizations-processed-dlt.sql:/docker-entrypoint-initdb.d/V0002_create-table-authorizations-processed-dlt.sql
+      - .migrations/orders/V0001_create-table-orders.sql:/docker-entrypoint-initdb.d/V0001_create-table-orders.sql
+      - .migrations/orders/V0002_create-table-authorizations-processed-dlt.sql:/docker-entrypoint-initdb.d/V0002_create-table-authorizations-processed-dlt.sql
     networks:
       - ecommerce-network
     healthcheck:
@@ -134,10 +171,29 @@ services:
     profiles:
       - stack
 
-  authorization-api.database:
+  mongodb-audit:
+    image: mongo:8.0
+    container_name: mongodb-audit
+    hostname: mongodb-audit
+    restart: "no"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: audit
+    ports:
+      - "27017:27017"
+    volumes:
+      - .migrations/cdc:/docker-entrypoint-initdb.d
+      - mongodb-data:/data/db
+    networks:
+      - ecommerce-network
+    profiles:
+      - stack
+
+  mysql-authorizations:
     image: docker.io/bitnami/mysql:8.0
-    container_name: authorization-api.database
-    hostname: authorization-api.database
+    container_name: mysql-authorizations
+    hostname: mysql-authorizations
     restart: "no"
     environment:
       MYSQL_USER: admin
@@ -159,19 +215,19 @@ services:
     profiles:
       - stack
 
-  order-api.broker:
+  kafka-broker:
     image: docker.io/bitnami/kafka:3.7
-    container_name: order-api.broker
-    hostname: order-api.broker
+    container_name: kafka-broker
+    hostname: kafka-broker
     restart: "no"
     ports:
       - "9092:9092"
     environment:
       KAFKA_CFG_NODE_ID: 0
       KAFKA_CFG_PROCESS_ROLES: controller,broker
-      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@order-api.broker:19192
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka-broker:19192
       KAFKA_CFG_LISTENERS: "LISTENER_DOCKER_INTERNAL://:19092,CONTROLLER://:19192,LISTENER_DOCKER_EXTERNAL://:9092"
-      KAFKA_CFG_ADVERTISED_LISTENERS: "LISTENER_DOCKER_INTERNAL://order-api.broker:19092,LISTENER_DOCKER_EXTERNAL://localhost:9092"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "LISTENER_DOCKER_INTERNAL://kafka-broker:19092,LISTENER_DOCKER_EXTERNAL://localhost:9092"
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "LISTENER_DOCKER_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:SASL_PLAINTEXT"
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "LISTENER_DOCKER_INTERNAL"
       KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "PLAIN"
@@ -180,8 +236,8 @@ services:
       KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_INTER_BROKER_USER: admin
       KAFKA_INTER_BROKER_PASSWORD: admin
-      KAFKA_CLIENT_USERS: order-api;order-worker
-      KAFKA_CLIENT_PASSWORDS: order-api;order-worker
+      KAFKA_CLIENT_USERS: order-api;order-worker;audit-worker
+      KAFKA_CLIENT_PASSWORDS: order-api;order-worker;audit-worker
     networks:
       - ecommerce-network
     volumes:
@@ -189,17 +245,52 @@ services:
     profiles:
       - stack
 
-  order-api.kafka-ui:
+  kafka-connect:
+    image: debezium/connect:3.0.0.Final
+    container_name: kafka-connect
+    hostname: kafka-connect
+    restart: "no"
+    ports:
+      - "8083:8083"
+    environment:
+      CONFIG_STORAGE_TOPIC: connect-cdc-storage-configs
+      OFFSET_STORAGE_TOPIC: connect-cdc-storage-offsets
+      STATUS_STORAGE_TOPIC: connect-cdc-storage-statuses
+      BOOTSTRAP_SERVERS: kafka-broker:19092
+      ENABLE_OTEL: true
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: https://otel-collector:4318/v1/metrics
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_LOGS_EXPORTER: none
+      OTEL_SERVICE_NAME: kafka-connect
+    depends_on:
+      - kafka-broker
+      - mysql-orders
+      - mysql-authorizations
+    networks:
+      - ecommerce-network
+    volumes:
+      - .otel-dev/otel.jar:/kafka/otel/otel.jar
+      - kafka-connect-data:/kafka/data
+      - kafka-connect-data:/kafka/logs
+      - kafka-connect-data:/kafka/config
+    profiles:
+      - stack
+
+  kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: order-api.kafka-ui
+    container_name: kafka-ui
     restart: "no"
     environment:
       KAFKA_CLUSTERS_0_NAME: ecommerce
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: order-api.broker:19092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:19092
     ports:
       - "8580:8080"
     depends_on:
-      - order-api.broker
+      - kafka-broker
     networks:
       - ecommerce-network
     profiles:
@@ -302,5 +393,9 @@ volumes:
     driver: local
   mysql-authorization-api-data:
     driver: local
+  mongodb-data:
+    driver: local
   kafka-order-api-data:
+    driver: local
+  kafka-connect-data:
     driver: local

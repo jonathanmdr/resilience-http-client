@@ -1,0 +1,83 @@
+# DATABASE CONFIGURATIONS
+database:
+    url: ${DATABASE_URL:localhost:27017}
+    schema-name: ${DATABASE_SCHEMA:audit}
+    username: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:root}
+
+# SPRING CONFIGURATION
+spring:
+    application:
+        name: @project.name@
+        version: @project.version@
+    main:
+        banner-mode: "off"
+
+# SPRING VIRTUAL THREADS FOR JAVA 21
+    threads:
+        virtual:
+            enabled: true
+
+# SPRING DATA CONFIGURATION
+    data:
+        mongodb:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}
+
+# SPRING CLOUD CONFIGURATION
+    cloud:
+        function:
+            definition: cdcAuthorizationEventsConsumer;cdcOrderEventsConsumer
+        stream:
+            kafka:
+                binder:
+                    auto-create-topics: true
+                bindings:
+                    cdcAuthorizationEventsConsumer-in-0:
+                        consumer:
+                            enableDlq: true
+                            dlqName: connect-cdc-authorization-events-dlt
+                            dlqPartitions: 1
+                            autoCommitOnError: true
+                            autoCommitOffset: true
+                    cdcOrderEventsConsumer-in-0:
+                        consumer:
+                            enableDlq: true
+                            dlqName: connect-cdc-order-events-dlt
+                            dlqPartitions: 1
+                            autoCommitOnError: true
+                            autoCommitOffset: true
+            bindings:
+                cdcAuthorizationEventsConsumer-in-0:
+                    destination: connect-cdc-authorization-events
+                    group: ${spring.application.name}
+                    binder: ecommerce
+                cdcOrderEventsConsumer-in-0:
+                    destination: connect-cdc-order-events
+                    group: ${spring.application.name}
+                    binder: ecommerce
+            binders:
+                ecommerce:
+                    type: kafka
+                    environment:
+                        spring:
+                            cloud:
+                                stream:
+                                    kafka:
+                                        binder:
+                                            brokers: ${KAFKA_BROKER_HOSTS:localhost:9092}
+                                            configuration:
+                                                security:
+                                                    protocol: ${KAFKA_PROTOCOL:SASL_PLAINTEXT}
+                                                sasl:
+                                                    mechanism: PLAIN
+                                                    jaas:
+                                                        config: "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"audit-worker\" password=\"audit-worker\";"
+
+# LOGGING CONFIGURATION
+logging:
+    level:
+        ROOT: INFO
+        com.resilience: INFO
+    appender: CONSOLE
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} TraceId: %X{trace_id} SpanId: %X{span_id} %highlight(%-5level) %magenta([%t]) %msg%n"
