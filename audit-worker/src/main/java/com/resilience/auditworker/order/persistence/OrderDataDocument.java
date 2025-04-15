@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 
-public class OrderBeforeDocument {
+public class OrderDataDocument {
 
     @Field(value = "id")
     private String id;
@@ -18,9 +18,9 @@ public class OrderBeforeDocument {
     @Field(value = "status")
     private String status;
 
-    public OrderBeforeDocument() { }
+    public OrderDataDocument() { }
 
-    public OrderBeforeDocument(final String id, final String customerId, final BigDecimal amount, final String status) {
+    public OrderDataDocument(final String id, final String customerId, final BigDecimal amount, final String status) {
         this.id = id;
         this.customerId = customerId;
         this.amount = amount;

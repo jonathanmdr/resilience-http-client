@@ -1,4 +1,4 @@
-package com.resilience.auditworker.authorization;
+package com.resilience.auditworker.authorization.consumer.model;
 
 import com.resilience.auditworker.common.CdcPayloadEvent;
 

@@ -1,7 +1,6 @@
 package com.resilience.auditworker.authorization.persistence;
 
 import com.resilience.auditworker.common.OriginDocument;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -15,10 +14,10 @@ public class AuthorizationDocument {
     private String id;
 
     @Field(value = "before")
-    private AuthorizationBeforeDocument before;
+    private AuthorizationDataDocument before;
 
     @Field(value = "after")
-    private AuthorizationAfterDocument after;
+    private AuthorizationDataDocument after;
 
     @Field(value = "origin")
     private OriginDocument origin;
@@ -30,7 +29,7 @@ public class AuthorizationDocument {
         this.createdAt = Instant.now();
     }
 
-    public AuthorizationDocument(final AuthorizationBeforeDocument before, final AuthorizationAfterDocument after, final OriginDocument origin) {
+    public AuthorizationDocument(final AuthorizationDataDocument before, final AuthorizationDataDocument after, final OriginDocument origin) {
         this.before = before;
         this.after = after;
         this.origin = origin;
@@ -45,19 +44,19 @@ public class AuthorizationDocument {
         this.id = id;
     }
 
-    public AuthorizationBeforeDocument getBefore() {
+    public AuthorizationDataDocument getBefore() {
         return before;
     }
 
-    public void setBefore(final AuthorizationBeforeDocument before) {
+    public void setBefore(final AuthorizationDataDocument before) {
         this.before = before;
     }
 
-    public AuthorizationAfterDocument getAfter() {
+    public AuthorizationDataDocument getAfter() {
         return after;
     }
 
-    public void setAfter(final AuthorizationAfterDocument after) {
+    public void setAfter(final AuthorizationDataDocument after) {
         this.after = after;
     }
 

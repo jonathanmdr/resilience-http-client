@@ -14,10 +14,10 @@ public class OrderDocument {
     private String id;
 
     @Field(value = "before")
-    private OrderBeforeDocument before;
+    private OrderDataDocument before;
 
     @Field(value = "after")
-    private OrderAfterDocument after;
+    private OrderDataDocument after;
 
     @Field(value = "origin")
     private OriginDocument origin;
@@ -29,7 +29,7 @@ public class OrderDocument {
         this.createdAt = Instant.now();
     }
 
-    public OrderDocument(final OrderBeforeDocument before, final OrderAfterDocument after, final OriginDocument origin) {
+    public OrderDocument(final OrderDataDocument before, final OrderDataDocument after, final OriginDocument origin) {
         this.before = before;
         this.after = after;
         this.origin = origin;
@@ -44,19 +44,19 @@ public class OrderDocument {
         this.id = id;
     }
 
-    public OrderBeforeDocument getBefore() {
+    public OrderDataDocument getBefore() {
         return before;
     }
 
-    public void setBefore(final OrderBeforeDocument before) {
+    public void setBefore(final OrderDataDocument before) {
         this.before = before;
     }
 
-    public OrderAfterDocument getAfter() {
+    public OrderDataDocument getAfter() {
         return after;
     }
 
-    public void setAfter(final OrderAfterDocument after) {
+    public void setAfter(final OrderDataDocument after) {
         this.after = after;
     }
 

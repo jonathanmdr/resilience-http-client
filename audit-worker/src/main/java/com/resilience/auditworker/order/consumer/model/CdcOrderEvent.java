@@ -1,4 +1,4 @@
-package com.resilience.auditworker.order;
+package com.resilience.auditworker.order.consumer.model;
 
 import com.resilience.auditworker.common.CdcPayloadEvent;
 

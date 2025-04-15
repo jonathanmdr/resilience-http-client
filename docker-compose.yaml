@@ -183,7 +183,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - .migrations/cdc:/docker-entrypoint-initdb.d
+      - .migrations/audit:/docker-entrypoint-initdb.d
       - mongodb-data:/data/db
     networks:
       - ecommerce-network
@@ -257,15 +257,6 @@ services:
       OFFSET_STORAGE_TOPIC: connect-cdc-storage-offsets
       STATUS_STORAGE_TOPIC: connect-cdc-storage-statuses
       BOOTSTRAP_SERVERS: kafka-broker:19092
-      ENABLE_OTEL: true
-      OTEL_METRICS_EXPORTER: otlp
-      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
-      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: https://otel-collector:4318/v1/metrics
-      OTEL_TRACES_EXPORTER: otlp
-      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
-      OTEL_LOGS_EXPORTER: none
-      OTEL_SERVICE_NAME: kafka-connect
     depends_on:
       - kafka-broker
       - mysql-orders
