@@ -3,6 +3,7 @@ package com.resilience.auditworker.order.command;
 import com.resilience.auditworker.common.CdcCommandHandler;
 import com.resilience.auditworker.common.CdcPayloadEvent;
 import com.resilience.auditworker.common.CdcPayloadEvent.CdcOperation;
+import com.resilience.auditworker.common.CdcPayloadEvent.CdcSource;
 import com.resilience.auditworker.common.OriginDocument;
 import com.resilience.auditworker.order.consumer.model.CdcOrderEvent;
 import com.resilience.auditworker.order.consumer.model.OrderEvent;
@@ -29,16 +30,10 @@ public class UpdateOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
         LOG.info("Updating authorization document: {}", event);
         final CdcPayloadEvent<OrderEvent> payload = event.payload();
         final CdcOperation operation = payload.op();
-        final CdcPayloadEvent.CdcSource source = payload.source();
+        final CdcSource source = payload.source();
         final OrderEvent before = payload.before();
         final OrderEvent after = payload.after();
-        final OriginDocument originDocument = new OriginDocument(
-            source.db(),
-            source.table(),
-            source.file(),
-            operation.name()
-        );
-        final OrderDocument entity = fromEventToDocument(before, after, originDocument);
+        final OrderDocument entity = fromEventToDocument(source, operation, before, after);
         this.orderRepository.insert(entity);
     }
 
@@ -47,7 +42,18 @@ public class UpdateOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
         return CdcOperation.UPDATE;
     }
 
-    private static OrderDocument fromEventToDocument(final OrderEvent before, final OrderEvent after, final OriginDocument originDocument) {
+    private static OrderDocument fromEventToDocument(
+        final CdcSource source,
+        final CdcOperation operation,
+        final OrderEvent before,
+        final OrderEvent after
+    ) {
+        final OriginDocument originDocument = new OriginDocument(
+            source.db(),
+            source.table(),
+            source.file(),
+            operation.name()
+        );
         final OrderDataDocument beforeDocument = new OrderDataDocument(
             String.valueOf(before.id()),
             String.valueOf(before.customerId()),

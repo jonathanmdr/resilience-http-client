@@ -36,7 +36,16 @@ public class CreateAuthorizationCdcCommand implements CdcCommandHandler<CdcAutho
         this.authorizationRepository.insert(entity);
     }
 
-    private static AuthorizationDocument fromEventToDocument(final CdcSource source, final CdcOperation operation, final AuthorizationEvent after) {
+    @Override
+    public CdcOperation op() {
+        return CdcOperation.CREATE;
+    }
+
+    private static AuthorizationDocument fromEventToDocument(
+        final CdcSource source,
+        final CdcOperation operation,
+        final AuthorizationEvent after
+    ) {
         final OriginDocument originDocument = new OriginDocument(
             source.db(),
             source.table(),
@@ -51,11 +60,6 @@ public class CreateAuthorizationCdcCommand implements CdcCommandHandler<CdcAutho
             after.status()
         );
         return new AuthorizationDocument(null, afterDocument, originDocument);
-    }
-
-    @Override
-    public CdcOperation op() {
-        return CdcOperation.CREATE;
     }
 
 }

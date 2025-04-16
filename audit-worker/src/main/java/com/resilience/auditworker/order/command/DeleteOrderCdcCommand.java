@@ -3,6 +3,7 @@ package com.resilience.auditworker.order.command;
 import com.resilience.auditworker.common.CdcCommandHandler;
 import com.resilience.auditworker.common.CdcPayloadEvent;
 import com.resilience.auditworker.common.CdcPayloadEvent.CdcOperation;
+import com.resilience.auditworker.common.CdcPayloadEvent.CdcSource;
 import com.resilience.auditworker.common.OriginDocument;
 import com.resilience.auditworker.order.consumer.model.CdcOrderEvent;
 import com.resilience.auditworker.order.consumer.model.OrderEvent;
@@ -29,15 +30,9 @@ public class DeleteOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
         LOG.info("Deleting authorization document: {}", event);
         final CdcPayloadEvent<OrderEvent> payload = event.payload();
         final CdcOperation operation = payload.op();
-        final CdcPayloadEvent.CdcSource source = payload.source();
+        final CdcSource source = payload.source();
         final OrderEvent before = payload.before();
-        final OriginDocument originDocument = new OriginDocument(
-            source.db(),
-            source.table(),
-            source.file(),
-            operation.name()
-        );
-        final OrderDocument entity = fromEventToDocument(before, originDocument);
+        final OrderDocument entity = fromEventToDocument(source, operation, before);
         this.orderRepository.insert(entity);
     }
 
@@ -46,7 +41,17 @@ public class DeleteOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
         return CdcOperation.DELETE;
     }
 
-    private static OrderDocument fromEventToDocument(final OrderEvent before, final OriginDocument originDocument) {
+    private static OrderDocument fromEventToDocument(
+        final CdcSource source,
+        final CdcOperation operation,
+        final OrderEvent before
+    ) {
+        final OriginDocument originDocument = new OriginDocument(
+            source.db(),
+            source.table(),
+            source.file(),
+            operation.name()
+        );
         final OrderDataDocument beforeDocument = new OrderDataDocument(
             String.valueOf(before.id()),
             String.valueOf(before.customerId()),

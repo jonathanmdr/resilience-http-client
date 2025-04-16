@@ -1,6 +1,7 @@
 package com.resilience.auditworker.order.persistence;
 
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 
@@ -12,7 +13,7 @@ public class OrderDataDocument {
     @Field(value = "customer_id")
     private String customerId;
 
-    @Field(value = "product_id")
+    @Field(value = "amount", targetType = FieldType.DECIMAL128)
     private BigDecimal amount;
 
     @Field(value = "status")

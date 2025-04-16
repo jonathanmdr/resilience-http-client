@@ -3,6 +3,7 @@ package com.resilience.auditworker.order.command;
 import com.resilience.auditworker.common.CdcCommandHandler;
 import com.resilience.auditworker.common.CdcPayloadEvent;
 import com.resilience.auditworker.common.CdcPayloadEvent.CdcOperation;
+import com.resilience.auditworker.common.CdcPayloadEvent.CdcSource;
 import com.resilience.auditworker.common.OriginDocument;
 import com.resilience.auditworker.order.consumer.model.CdcOrderEvent;
 import com.resilience.auditworker.order.consumer.model.OrderEvent;
@@ -29,8 +30,22 @@ public class CreateOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
         LOG.info("Inserting authorization document: {}", event);
         final CdcPayloadEvent<OrderEvent> payload = event.payload();
         final CdcOperation operation = payload.op();
-        final CdcPayloadEvent.CdcSource source = payload.source();
+        final CdcSource source = payload.source();
         final OrderEvent after = payload.after();
+        final OrderDocument entity = fromEventToDocument(source, operation, after);
+        this.orderRepository.insert(entity);
+    }
+
+    @Override
+    public CdcOperation op() {
+        return CdcOperation.CREATE;
+    }
+
+    private static OrderDocument fromEventToDocument(
+        final CdcSource source,
+        final CdcOperation operation,
+        final OrderEvent after
+    ) {
         final OriginDocument originDocument = new OriginDocument(
             source.db(),
             source.table(),
@@ -43,13 +58,7 @@ public class CreateOrderCdcCommand implements CdcCommandHandler<CdcOrderEvent> {
             after.amount(),
             after.status()
         );
-        final OrderDocument entity = new OrderDocument(null, afterDocument, originDocument);
-        this.orderRepository.insert(entity);
-    }
-
-    @Override
-    public CdcOperation op() {
-        return CdcOperation.CREATE;
+        return new OrderDocument(null, afterDocument, originDocument);
     }
 
 }

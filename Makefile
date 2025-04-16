@@ -26,14 +26,6 @@ up:
 up-stack:
 	@docker-compose --profile stack up -d
 
-.PHONY: up-services
-up-services:
-	@docker-compose --profile services up -d
-
-.PHONY: up-connect
-up-connect:
-	@docker-compose --profile connect up -d
-
 .PHONY: down
 down:
 	@docker-compose --profile stack --profile services down --remove-orphans --volumes
@@ -42,14 +34,6 @@ down:
 down-stack:
 	@docker-compose --profile stack down --remove-orphans --volumes
 
-.PHONY: down-services
-down-services:
-	@docker-compose --profile services down --remove-orphans --volumes
-
-.PHONY: down-connect
-down-connect:
-	@docker-compose --profile connect down --remove-orphans --volumes
-
 .PHONY: restart
 restart:
 	@docker-compose --profile stack --profile services restart
@@ -57,14 +41,6 @@ restart:
 .PHONY: restart-stack
 restart-stack:
 	@docker-compose --profile stack restart
-
-.PHONY: restart-services
-restart-services:
-	@docker-compose --profile services restart
-
-.PHONY: restart-connect
-restart-connect:
-	@docker-compose --profile connect restart
 
 .PHONY: connectors
 connectors:
@@ -89,4 +65,3 @@ bulkhead:
 	@cat output_$(order_id).txt
 	@rm output_$(order_id).txt
 	@echo "\n\nBulkhead finished"
-

@@ -32,16 +32,6 @@ docker-compose --profile stack up -d
 make up-stack
 ```
 
-## Upping The Development Services Environment Only
-```shell
-# With docker-compose
-docker-compose --profile services up -d
-```
-```shell
-# With Make
-make up-services
-```
-
 ## Restarting The Development Stack and Services Environment
 ```shell
 # With docker-compose
@@ -60,16 +50,6 @@ docker-compose --profile stack restart
 ```shell
 # With Make
 make restart-stack
-```
-
-## Restarting The Development Services Environment Only
-```shell
-# With docker-compose
-docker-compose --profile services restart
-```
-```shell
-# With Make
-make restart-services
 ```
 
 ## Downing The Development Stack and Services Environment
@@ -92,17 +72,8 @@ docker-compose --profile stack down --remove-orphans --volumes
 make down-stack
 ```
 
-## Downing The Development Services Environment Only
-```shell
-# With docker-compose
-docker-compose --profile services down --remove-orphans --volumes
-```
-```shell
-# With Make
-make down-services
-```
-
 ## Register CDC Source Connectors
+> :information_source: _The connectors are not registered automatically when the stack is up. You should register them manually by running the following command bellow_
 ```shell
 # With bash
 ./connectors.sh
@@ -117,54 +88,64 @@ make connectors
 make otel-agent
 ```
 > :information_source: _Use the OTEL agent passing the java agent to the VM arguments: `-javaagent:.otel-dev/otel.jar`_
+> 
+> :information_source: _To enable custom metrics using OTEL registry via Micrometer, pass the following value using the VM arguments: `-Dotel.instrumentation.micrometer.enabled=true`_
 
 ## Open Telemetry Environment Variables Configuration
 
 ### order-api
 ```
-OTEL_METRICS_EXPORTER=otlp
 OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
-OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative
 OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_METRICS_EXPORTER=otlp
+OTEL_TRACES_EXPORTER=otlp
 OTEL_LOGS_EXPORTER=none
+OTEL_METRIC_EXPORT_INTERVAL=15000
 OTEL_SERVICE_NAME=order-api
 ```
 
 ### authorization-api
 ```
-OTEL_METRICS_EXPORTER=otlp
 OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
-OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative
 OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_METRICS_EXPORTER=otlp
+OTEL_TRACES_EXPORTER=otlp
 OTEL_LOGS_EXPORTER=none
+OTEL_METRIC_EXPORT_INTERVAL=15000
 OTEL_SERVICE_NAME=authorization-api
 ```
 
 ### order-worker
 ```
-OTEL_METRICS_EXPORTER=otlp
 OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
-OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative
 OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_METRICS_EXPORTER=otlp
+OTEL_TRACES_EXPORTER=otlp
 OTEL_LOGS_EXPORTER=none
+OTEL_METRIC_EXPORT_INTERVAL=15000
 OTEL_SERVICE_NAME=order-worker
 ```
 
 ### audit-worker
 ```
-OTEL_METRICS_EXPORTER=otlp
 OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
-OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative
 OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_METRICS_EXPORTER=otlp
+OTEL_TRACES_EXPORTER=otlp
 OTEL_LOGS_EXPORTER=none
+OTEL_METRIC_EXPORT_INTERVAL=15000
 OTEL_SERVICE_NAME=audit-worker
 ```
 

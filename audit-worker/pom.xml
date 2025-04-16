@@ -22,7 +22,6 @@
         <!-- DEPENDENCIES -->
         <spring-boot-dependencies.version>3.4.4</spring-boot-dependencies.version>
         <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
-        <open-telemetry.version>1.49.0</open-telemetry.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <jackson-databind.version>2.18.2</jackson-databind.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -49,13 +48,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>io.opentelemetry</groupId>
-                <artifactId>opentelemetry-bom</artifactId>
-                <version>${open-telemetry.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -69,6 +61,10 @@
                     <artifactId>spring-boot-starter-tomcat</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -100,14 +96,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk</artifactId>
         </dependency>
         <dependency>
             <groupId>com.resilience.application</groupId>

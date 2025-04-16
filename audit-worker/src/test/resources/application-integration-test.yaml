@@ -24,3 +24,11 @@ spring:
 # LOGGING CONFIGURATION
 logging:
     appender: CONSOLE
+
+# APPLICATION CONFIGURATION
+application:
+    schedulers:
+        enabled: false
+        jobs:
+            analysis-job:
+                cron: "0/3 * * * * *"

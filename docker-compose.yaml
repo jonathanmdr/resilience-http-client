@@ -8,17 +8,19 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: order-api
-    entrypoint: ["java", "-javaagent:otel.jar", "-jar", "order-api.jar"]
+    entrypoint: ["java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "order-api.jar"]
     hostname: order-api
     restart: "no"
     environment:
-      OTEL_METRICS_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
-      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
       OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
       OTEL_LOGS_EXPORTER: none
+      OTEL_METRIC_EXPORT_INTERVAL: 15000
       OTEL_SERVICE_NAME: order-api
       DATABASE_URL: mysql-orders:3306
       KAFKA_BROKER_HOSTS: kafka-broker:19092
@@ -47,17 +49,19 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: authorization-api
-    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "authorization-api.jar" ]
+    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "authorization-api.jar" ]
     hostname: authorization-api
     restart: "no"
     environment:
-      OTEL_METRICS_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
-      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
       OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
       OTEL_LOGS_EXPORTER: none
+      OTEL_METRIC_EXPORT_INTERVAL: 15000
       OTEL_SERVICE_NAME: authorization-api
       DATABASE_URL: mysql-authorizations:3306
     ports:
@@ -81,17 +85,19 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: order-worker
-    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "order-worker.jar" ]
+    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "order-worker.jar" ]
     hostname: order-worker
     restart: "no"
     environment:
-      OTEL_METRICS_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
-      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
       OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
       OTEL_LOGS_EXPORTER: none
+      OTEL_METRIC_EXPORT_INTERVAL: 15000
       OTEL_SERVICE_NAME: order-worker
       DATABASE_URL: mysql-orders:3306
       KAFKA_BROKER_HOSTS: kafka-broker:19092
@@ -116,17 +122,19 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: audit-worker
-    entrypoint: [ "java", "-javaagent:otel.jar", "-jar", "audit-worker.jar" ]
+    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "audit-worker.jar" ]
     hostname: audit-worker
     restart: "no"
     environment:
-      OTEL_METRICS_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
-      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
       OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
       OTEL_LOGS_EXPORTER: none
+      OTEL_METRIC_EXPORT_INTERVAL: 15000
       OTEL_SERVICE_NAME: audit-worker
       DATABASE_URL: mongodb-audit:27017
       KAFKA_BROKER_HOSTS: kafka-broker:19092
@@ -264,7 +272,6 @@ services:
     networks:
       - ecommerce-network
     volumes:
-      - .otel-dev/otel.jar:/kafka/otel/otel.jar
       - kafka-connect-data:/kafka/data
       - kafka-connect-data:/kafka/logs
       - kafka-connect-data:/kafka/config
@@ -340,16 +347,16 @@ services:
     command:
       - --web.console.templates=/etc/prometheus/consoles
       - --web.console.libraries=/etc/prometheus/console_libraries
-      - --storage.tsdb.retention.time=1h
+      - --storage.tsdb.retention.time=24h
       - --storage.tsdb.path=/prometheus
       - --web.enable-lifecycle
       - --web.route-prefix=/
-      - --config.file=/etc/prometheus/prometheus.yml
+      - --config.file=/etc/prometheus/prometheus.yaml
       - --web.enable-remote-write-receiver
     ports:
       - "9090:9090"
     volumes:
-      - .otel-dev/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - .otel-dev/prometheus.yaml:/etc/prometheus/prometheus.yaml
     networks:
       - ecommerce-network
     profiles:
@@ -367,7 +374,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .otel-dev/ds-prometheus.yaml:/etc/grafana/provisioning/datasources/datasource.yml
+      - .otel-dev/ds-prometheus.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - .otel-dev/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - .otel-dev/ecommerce-dashboard.json:/etc/grafana/provisioning/dashboards/ecommerce-dashboard.json
     depends_on:
       - prometheus
     networks:

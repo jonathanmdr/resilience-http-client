@@ -36,6 +36,11 @@ public class DeleteAuthorizationCdcCommand implements CdcCommandHandler<CdcAutho
         this.authorizationRepository.insert(entity);
     }
 
+    @Override
+    public CdcOperation op() {
+        return CdcOperation.DELETE;
+    }
+
     private static AuthorizationDocument fromEventToDocument(
         final CdcSource source,
         final CdcOperation operation,
@@ -55,11 +60,6 @@ public class DeleteAuthorizationCdcCommand implements CdcCommandHandler<CdcAutho
             before.status()
         );
         return new AuthorizationDocument(beforeDocument, null, originDocument);
-    }
-
-    @Override
-    public CdcOperation op() {
-        return CdcOperation.DELETE;
     }
 
 }
