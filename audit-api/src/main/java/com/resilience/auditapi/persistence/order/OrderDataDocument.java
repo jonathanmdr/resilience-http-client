@@ -28,7 +28,7 @@ public class OrderDataDocument {
         this.status = status;
     }
 
-    public String getId() {
+    public String id() {
         return id;
     }
 
@@ -36,7 +36,7 @@ public class OrderDataDocument {
         this.id = id;
     }
 
-    public String getCustomerId() {
+    public String customerId() {
         return customerId;
     }
 
@@ -44,7 +44,7 @@ public class OrderDataDocument {
         this.customerId = customerId;
     }
 
-    public BigDecimal getAmount() {
+    public BigDecimal amount() {
         return amount;
     }
 
@@ -52,7 +52,7 @@ public class OrderDataDocument {
         this.amount = amount;
     }
 
-    public String getStatus() {
+    public String status() {
         return status;
     }
 

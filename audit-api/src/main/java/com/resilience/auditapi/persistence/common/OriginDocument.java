@@ -25,7 +25,7 @@ public class OriginDocument {
         this.op = op;
     }
 
-    public String getDb() {
+    public String db() {
         return db;
     }
 
@@ -33,7 +33,7 @@ public class OriginDocument {
         this.db = db;
     }
 
-    public String getTable() {
+    public String table() {
         return table;
     }
 
@@ -41,7 +41,7 @@ public class OriginDocument {
         this.table = table;
     }
 
-    public String getFile() {
+    public String file() {
         return file;
     }
 
@@ -49,7 +49,7 @@ public class OriginDocument {
         this.file = file;
     }
 
-    public String getOp() {
+    public String op() {
         return op;
     }
 

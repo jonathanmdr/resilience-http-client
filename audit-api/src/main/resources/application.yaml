@@ -2,7 +2,7 @@
 server:
     servlet:
         context-path: /
-    port: 8080
+    port: 8082
     shutdown: "graceful"
     compression:
         enabled: true

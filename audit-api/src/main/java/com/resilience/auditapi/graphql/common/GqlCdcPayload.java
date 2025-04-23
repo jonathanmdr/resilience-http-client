@@ -1,15 +1,15 @@
-package com.resilience.auditapi.graphql.authorization.model;
+package com.resilience.auditapi.graphql.common;
 
-public record GqlCdcAuthorizationPayload(
+public record GqlCdcPayload<T>(
     String id,
-    GqlAuthorization before,
-    GqlAuthorization after,
+    T before,
+    T after,
     CdcSource source,
     String createdAt
 ) {
 
-    public static GqlCdcAuthorizationPayload with(final String id, final GqlAuthorization before, final GqlAuthorization after, final CdcSource source, final String createdAt) {
-        return new GqlCdcAuthorizationPayload(id, before, after, source, createdAt);
+    public static <T> GqlCdcPayload<T> with(final String id, final T before, final T after, final CdcSource source, final String createdAt) {
+        return new GqlCdcPayload<>(id, before, after, source, createdAt);
     }
 
     public record CdcSource(

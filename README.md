@@ -121,6 +121,20 @@ OTEL_METRIC_EXPORT_INTERVAL=15000
 OTEL_SERVICE_NAME=authorization-api
 ```
 
+### audit-api
+```
+OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://localhost:4318/v1/metrics
+OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=cumulative
+OTEL_EXPORTER_OTLP_TRACES_COMPRESSION=gzip
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_METRICS_EXPORTER=otlp
+OTEL_TRACES_EXPORTER=otlp
+OTEL_LOGS_EXPORTER=none
+OTEL_METRIC_EXPORT_INTERVAL=15000
+OTEL_SERVICE_NAME=audit-api
+```
+
 ### order-worker
 ```
 OTEL_EXPORTER_OTLP_METRICS_COMPRESSION=gzip
@@ -154,10 +168,11 @@ OTEL_SERVICE_NAME=audit-worker
 |----------------------------------------------|-----------------------------------|------------|
 | http://localhost:8080                        | OpenAPI Order API                 | `services` |
 | http://localhost:8081                        | OpenAPI Authorization API         | `services` |
+| http://localhost:8082/graphiql               | GraphQL Audit API                 | `services` |
 | `noop`                                       | Order Worker                      | `services` |
 | `noop`                                       | Audit Worker                      | `services` |
 | `jdbc:mysql://localhost:3306/orders`         | Order Database                    | `stack`    |
-| `mongodb://root:root@localhost:27017/audit`  | Authorization CDC Database        | `stack`    |
+| `mongodb://root:root@localhost:27017/audit`  | Audit CDC Database                | `stack`    |
 | `jdbc:mysql://localhost:3307/authorizations` | Authorization Database            | `stack`    |
 | http://localhost:8580                        | Kafka UI                          | `stack`    |
 | http://localhost:8083                        | Kafka Connect API                 | `stack`    |
@@ -168,7 +183,7 @@ OTEL_SERVICE_NAME=audit-worker
 | http://localhost:3000                        | Grafana                           | `stack`    |
 
 
-## Register the CDC Authorizations Source Connector
+## Register the CDC Authorization Source Connector
 ```shell
 curl --request POST \
   --url http://localhost:8083/connectors \
@@ -204,7 +219,7 @@ curl --request POST \
 }'
 ```
 
-## Register the CDC Orders Source Connector
+## Register the CDC Order Source Connector
 ```shell
 curl --request POST \
   --url http://localhost:8083/connectors \

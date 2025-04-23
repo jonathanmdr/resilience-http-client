@@ -79,6 +79,42 @@ services:
     profiles:
       - services
 
+  audit-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: order-manager:latest
+    container_name: audit-api
+    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "audit-api.jar" ]
+    hostname: audit-api
+    restart: "no"
+    environment:
+      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://otel-collector:4318/v1/metrics
+      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: cumulative
+      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: none
+      OTEL_METRIC_EXPORT_INTERVAL: 15000
+      OTEL_SERVICE_NAME: audit-api
+      DATABASE_URL: mongodb-audit:27017
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb-audit
+      - otel-collector
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "/app/healthcheck.sh audit-api api http://audit-api:8082/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    profiles:
+      - services
+
   order-worker:
     build:
       context: .
