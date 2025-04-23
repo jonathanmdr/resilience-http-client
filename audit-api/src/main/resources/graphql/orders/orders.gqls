@@ -1,0 +1,25 @@
+extend type Query {
+    orders: [CdcOrderPayload!]!
+}
+
+type CdcOrderPayload {
+    id: ID!
+    before: Order
+    after: Order
+    source: OrderSource!
+    createdAt: String!
+}
+
+type Order {
+    id: ID!
+    customerId: String!
+    amount: String!
+    status: String!
+}
+
+type OrderSource {
+    db: String!
+    table: String!
+    file: String!
+    op: String!
+}

@@ -1,0 +1,26 @@
+extend type Query {
+    authorizations: [CdcAuthorizationPayload!]!
+}
+
+type CdcAuthorizationPayload {
+    id: ID!
+    before: Authorization
+    after: Authorization
+    source: AuthorizationSource!
+    createdAt: String!
+}
+
+type Authorization {
+    id: ID!
+    orderId: String!
+    customerId: String!
+    amount: String!
+    status: String!
+}
+
+type AuthorizationSource {
+    db: String!
+    table: String!
+    file: String!
+    op: String!
+}

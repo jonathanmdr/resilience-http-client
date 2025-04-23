@@ -1,0 +1,86 @@
+# SERVER CONFIGURATION
+server:
+    servlet:
+        context-path: /
+    port: 8080
+    shutdown: "graceful"
+    compression:
+        enabled: true
+        mime-types:
+            - text/html
+            - text/xml
+            - text/plain
+            - text/css
+            - text/javascript
+            - application/javascript
+            - application/json
+        min-response-size: 1024
+    undertow:
+        threads:
+            worker: 64
+            io: 4
+
+# ACTUATOR CONFIGURATION
+management:
+    endpoint:
+        health:
+            show-details: never
+    endpoints:
+        web:
+            base-path: /
+            exposure:
+                include: health
+
+# DATABASE CONFIGURATIONS
+database:
+    url: ${DATABASE_URL:localhost:27017}
+    schema-name: ${DATABASE_SCHEMA:audit}
+    username: ${DATABASE_USER:root}
+    password: ${DATABASE_PASSWORD:root}
+
+# SPRING CONFIGURATION
+spring:
+    application:
+        name: @project.name@
+        version: @project.version@
+    main:
+        banner-mode: "off"
+    web:
+        resources:
+            add-mappings: false
+    mvc:
+        throw-exception-if-no-handler-found: true
+        favicon:
+            enabled: false
+    metrics:
+        web:
+            server:
+                auto-time-requests: true
+
+# CODECS CONFIGURATION
+    codec:
+        max-in-memory-size: 1MB
+
+# SPRING VIRTUAL THREADS FOR JAVA 21
+    threads:
+        virtual:
+            enabled: true
+
+# SPRING DATA CONFIGURATION
+    data:
+        mongodb:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}
+
+# SPRING GRAPHQL CONFIGURATION
+    graphql:
+        graphiql:
+            enabled: true
+
+# LOGGING CONFIGURATION
+logging:
+    level:
+        ROOT: INFO
+        com.resilience: INFO
+    appender: CONSOLE
+    pattern:
+        console: "%d{yyyy-MM-dd HH:mm:ss.SSS} TraceId: %X{trace_id} SpanId: %X{span_id} %highlight(%-5level) %magenta([%t]) %msg%n"

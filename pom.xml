@@ -17,6 +17,7 @@
         <module>order-worker</module>
         <module>authorization-api</module>
         <module>audit-worker</module>
+        <module>audit-api</module>
     </modules>
 
     <properties>
