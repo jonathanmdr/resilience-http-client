@@ -26,7 +26,7 @@ spring:
 # SPRING CLOUD CONFIGURATION
     cloud:
         function:
-            definition: cdcAuthorizationEventsConsumer;cdcOrderEventsConsumer
+            definition: cdcAuthorizationEventsConsumer;cdcAuthorizationDltEventsConsumer;cdcOrderEventsConsumer;cdcOrderDltEventsConsumer
         stream:
             kafka:
                 binder:
@@ -39,6 +39,11 @@ spring:
                             dlqPartitions: 1
                             autoCommitOnError: true
                             autoCommitOffset: true
+                    cdcAuthorizationDltEventsConsumer-in-0:
+                        consumer:
+                            enableDlq: false
+                            autoCommitOnError: true
+                            autoCommitOffset: true
                     cdcOrderEventsConsumer-in-0:
                         consumer:
                             enableDlq: true
@@ -46,13 +51,26 @@ spring:
                             dlqPartitions: 1
                             autoCommitOnError: true
                             autoCommitOffset: true
+                    cdcOrderDltEventsConsumer-in-0:
+                        consumer:
+                            enableDlq: false
+                            autoCommitOnError: true
+                            autoCommitOffset: true
             bindings:
                 cdcAuthorizationEventsConsumer-in-0:
                     destination: connect-cdc-authorization-events
                     group: ${spring.application.name}
                     binder: ecommerce
+                cdcAuthorizationDltEventsConsumer-in-0:
+                    destination: connect-cdc-authorization-events-dlt
+                    group: ${spring.application.name}
+                    binder: ecommerce
                 cdcOrderEventsConsumer-in-0:
                     destination: connect-cdc-order-events
+                    group: ${spring.application.name}
+                    binder: ecommerce
+                cdcOrderDltEventsConsumer-in-0:
+                    destination: connect-cdc-order-events-dlt
                     group: ${spring.application.name}
                     binder: ecommerce
             binders:
