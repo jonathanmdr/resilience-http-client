@@ -22,16 +22,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- DEPENDENCIES -->
-        <spring-boot-dependencies.version>3.4.4</spring-boot-dependencies.version>
-        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+        <spring-boot-dependencies.version>3.5.0</spring-boot-dependencies.version>
+        <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
 
         <!-- TEST DEPENDENCIES -->
-        <awaitility.version>4.2.2</awaitility.version>
+        <awaitility.version>4.3.0</awaitility.version>
 
         <!-- BUILD -->
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
     </properties>
 
     <dependencyManagement>

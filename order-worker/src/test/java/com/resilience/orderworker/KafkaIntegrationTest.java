@@ -8,6 +8,7 @@ import org.springframework.cloud.stream.binder.test.TestChannelBinderConfigurati
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.lang.annotation.ElementType;
@@ -25,7 +26,10 @@ import java.lang.annotation.Target;
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 @EmbeddedKafka(
     brokerProperties = {
-        "listeners=PLAINTEXT://localhost:9092",
+        "listeners=CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092",
+        "listener.security.protocol.map=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT",
+        "advertised.listeners=EXTERNAL://127.0.0.1:9092",
+        "controller.listener.names=CONTROLLER",
         "port=9092"
     },
     controlledShutdown = true,
@@ -33,6 +37,7 @@ import java.lang.annotation.Target;
 )
 @Import(TestChannelBinderConfiguration.class)
 @ExtendWith(CleanupDatabaseExtension.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public @interface KafkaIntegrationTest {
 
 }
