@@ -28,9 +28,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- TEST -->
-        <junit-jupiter.version>5.13.0</junit-jupiter.version>
-        <mockito-junit-jupiter.version>5.18.0</mockito-junit-jupiter.version>
-        <assertj-core.version>3.27.3</assertj-core.version>
+        <junit-jupiter.version>5.13.4</junit-jupiter.version>
+        <mockito-junit-jupiter.version>5.19.0</mockito-junit-jupiter.version>
+        <assertj-core.version>3.27.4</assertj-core.version>
 
         <!-- BUILD -->
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>

@@ -20,11 +20,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- DEPENDENCIES -->
-        <spring-boot-dependencies.version>3.5.3</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.5.5</spring-boot-dependencies.version>
         <spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>
         <logstash-logback-encoder.version>8.1</logstash-logback-encoder.version>
-        <jackson-databind.version>2.19.0</jackson-databind.version>
-        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <jackson-databind.version>2.19.2</jackson-databind.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
 
         <!-- BUILD -->
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
