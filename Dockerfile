@@ -1,4 +1,4 @@
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+FROM maven:3.9.11-eclipse-temurin-25-alpine AS build
 
 WORKDIR /build
 
@@ -14,7 +14,7 @@ COPY audit-worker audit-worker
 
 RUN mvn package -Dmaven.test.skip=true --batch-mode
 
-FROM eclipse-temurin:21-jre-alpine-3.21 AS release
+FROM eclipse-temurin:25-jre-alpine-3.22 AS release
 
 WORKDIR /app
 

@@ -8,7 +8,18 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: order-api
-    entrypoint: ["java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "order-api.jar"]
+    entrypoint:
+      - "java"
+      - "-Dotel.instrumentation.micrometer.enabled=true"
+      - "-Duser.timezone=America/Sao_Paulo"
+      - "-Dfile.encoding=UTF-8"
+      - "-XX:+UseG1GC"
+      - "-XX:+UseCompactObjectHeaders"
+      - "-XX:InitialRAMPercentage=35"
+      - "-XX:MaxRAMPercentage=65"
+      - "-javaagent:otel.jar"
+      - "-jar"
+      - "order-api.jar"
     hostname: order-api
     restart: "no"
     environment:
@@ -49,7 +60,18 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: authorization-api
-    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "authorization-api.jar" ]
+    entrypoint:
+      - "java"
+      - "-Dotel.instrumentation.micrometer.enabled=true"
+      - "-Duser.timezone=America/Sao_Paulo"
+      - "-Dfile.encoding=UTF-8"
+      - "-XX:+UseG1GC"
+      - "-XX:+UseCompactObjectHeaders"
+      - "-XX:InitialRAMPercentage=35"
+      - "-XX:MaxRAMPercentage=65"
+      - "-javaagent:otel.jar"
+      - "-jar"
+      - "authorization-api.jar"
     hostname: authorization-api
     restart: "no"
     environment:
@@ -85,7 +107,18 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: audit-api
-    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "audit-api.jar" ]
+    entrypoint:
+      - "java"
+      - "-Dotel.instrumentation.micrometer.enabled=true"
+      - "-Duser.timezone=America/Sao_Paulo"
+      - "-Dfile.encoding=UTF-8"
+      - "-XX:+UseG1GC"
+      - "-XX:+UseCompactObjectHeaders"
+      - "-XX:InitialRAMPercentage=35"
+      - "-XX:MaxRAMPercentage=65"
+      - "-javaagent:otel.jar"
+      - "-jar"
+      - "audit-api.jar"
     hostname: audit-api
     restart: "no"
     environment:
@@ -121,7 +154,18 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: order-worker
-    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "order-worker.jar" ]
+    entrypoint:
+      - "java"
+      - "-Dotel.instrumentation.micrometer.enabled=true"
+      - "-Duser.timezone=America/Sao_Paulo"
+      - "-Dfile.encoding=UTF-8"
+      - "-XX:+UseG1GC"
+      - "-XX:+UseCompactObjectHeaders"
+      - "-XX:InitialRAMPercentage=35"
+      - "-XX:MaxRAMPercentage=65"
+      - "-javaagent:otel.jar"
+      - "-jar"
+      - "order-worker.jar"
     hostname: order-worker
     restart: "no"
     environment:
@@ -158,7 +202,18 @@ services:
       dockerfile: Dockerfile
     image: order-manager:latest
     container_name: audit-worker
-    entrypoint: [ "java", "-javaagent:otel.jar", "-Dotel.instrumentation.micrometer.enabled=true", "-jar", "audit-worker.jar" ]
+    entrypoint:
+      - "java"
+      - "-Dotel.instrumentation.micrometer.enabled=true"
+      - "-Duser.timezone=America/Sao_Paulo"
+      - "-Dfile.encoding=UTF-8"
+      - "-XX:+UseG1GC"
+      - "-XX:+UseCompactObjectHeaders"
+      - "-XX:InitialRAMPercentage=35"
+      - "-XX:MaxRAMPercentage=65"
+      - "-javaagent:otel.jar"
+      - "-jar"
+      - "audit-worker.jar"
     hostname: audit-worker
     restart: "no"
     environment:
