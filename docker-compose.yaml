@@ -245,7 +245,7 @@ services:
       - services
 
   mysql-orders:
-    image: docker.io/bitnami/mysql:8.0
+    image: docker.io/bitnamilegacy/mysql:8.0
     container_name: mysql-orders
     hostname: mysql-orders
     restart: "no"
@@ -290,7 +290,7 @@ services:
       - stack
 
   mysql-authorizations:
-    image: docker.io/bitnami/mysql:8.0
+    image: docker.io/bitnamilegacy/mysql:8.0
     container_name: mysql-authorizations
     hostname: mysql-authorizations
     restart: "no"
@@ -315,7 +315,7 @@ services:
       - stack
 
   kafka-broker:
-    image: docker.io/bitnami/kafka:3.7
+    image: docker.io/bitnamilegacy/kafka:3.7
     container_name: kafka-broker
     hostname: kafka-broker
     restart: "no"
