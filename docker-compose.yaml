@@ -275,6 +275,7 @@ services:
     container_name: mongodb-audit
     hostname: mongodb-audit
     restart: "no"
+    command: [ "mongod", "--replSet", "rs0", "--keyFile", "/etc/mongodb-rs0-keyfile" ]
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -282,8 +283,16 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - .migrations/audit:/docker-entrypoint-initdb.d
       - mongodb-data:/data/db
+      - .migrations/audit:/docker-entrypoint-initdb.d
+      - .mongodb/mongodb-rs0-keyfile:/etc/mongodb-rs0-keyfile:ro
+      - .mongodb/replicaset-init.sh:/usr/local/bin/replicaset-init.sh:ro
+    healthcheck:
+      test: [ "CMD", "sh", "/usr/local/bin/replicaset-init.sh" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - ecommerce-network
     profiles:

@@ -73,7 +73,8 @@ make down-stack
 ```
 
 ## Register CDC Source Connectors
-> :information_source: _The connectors are not registered automatically when the stack is up. You should register them manually by running the following command bellow_
+> [!WARNING]
+> _The connectors are not registered automatically when the stack is up. You should register them manually by running the following command bellow_
 ```shell
 # With bash
 ./connectors.sh
@@ -87,9 +88,10 @@ make connectors
 ```shell
 make otel-agent
 ```
-> :information_source: _Use the OTEL agent passing the java agent to the VM arguments: `-javaagent:.otel-dev/otel.jar`_
+> [!TIP]
+> _Use the OTEL agent passing the java agent to the VM arguments: `-javaagent:.otel-dev/otel.jar`_
 > 
-> :information_source: _To enable custom metrics using OTEL registry via Micrometer, pass the following value using the VM arguments: `-Dotel.instrumentation.micrometer.enabled=true`_
+> _To enable custom metrics using OTEL registry via Micrometer, pass the following value using the VM arguments: `-Dotel.instrumentation.micrometer.enabled=true`_
 
 ## Open Telemetry Environment Variables Configuration
 
@@ -253,4 +255,13 @@ curl --request POST \
     "tombstones.on.delete": "false"
   }
 }'
+```
+
+## Generating MongoDB Keyfile Configuration
+```shell
+# Generate a new keyfile
+openssl rand -base64 756 > .mongodb/mongodb-rs0-keyfile
+
+# Apply read-only permissions to the file
+chmod 400 .mongodb/mongodb-rs0-keyfile
 ```
