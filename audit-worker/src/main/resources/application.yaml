@@ -4,6 +4,11 @@ database:
     schema-name: ${DATABASE_SCHEMA:audit}
     username: ${DATABASE_USER:root}
     password: ${DATABASE_PASSWORD:root}
+    configuration:
+        primary:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}?retryWrites=true&retryReads=true&w=majority&readPreference=primary&appName=${spring.application.name}
+        default:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}?retryWrites=true&retryReads=true&w=majority&readPreference=secondaryPreferred&appName=${spring.application.name}
 
 # SPRING CONFIGURATION
 spring:
@@ -17,11 +22,6 @@ spring:
     threads:
         virtual:
             enabled: true
-
-# SPRING DATA CONFIGURATION
-    data:
-        mongodb:
-            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}
 
 # SPRING CLOUD CONFIGURATION
     cloud:

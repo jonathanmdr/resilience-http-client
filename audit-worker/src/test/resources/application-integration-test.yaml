@@ -1,10 +1,16 @@
 # THIS FILE SHOULD BE CONTAINING FAKE DATA FOR TESTS ONLY
 
 # DATABASE CONFIGURATIONS
-spring:
-    data:
-        mongodb:
-            uri: mongodb://root:root@localhost:27017/audit
+database:
+    url: localhost:27017
+    schema-name: audit
+    username: root
+    password: root
+    configuration:
+        primary:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}?retryWrites=true&retryReads=true&w=majority&readPreference=primary&appName=${spring.application.name}
+        default:
+            uri: mongodb://${database.username}:${database.password}@${database.url}/${database.schema-name}?retryWrites=true&retryReads=true&w=majority&readPreference=secondaryPreferred&appName=${spring.application.name}
 
 # SPRING CLOUD CONFIGURATION
     cloud:
